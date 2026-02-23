@@ -1,5 +1,24 @@
 {
+  "name": "subagent-scheduler",
+  "version": "1.0.0",
+  "description": "自适应子代理调度系统",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "test:sqlite": "node test-sqlite.js",
+    "init": "node -e \"require('./database').initDatabase()\""
+  },
   "dependencies": {
-    "better-sqlite3": "^12.6.2"
-  }
+    "better-sqlite3": "^11.0.0",
+    "ioredis": "^5.9.3",
+    "node-cron": "^4.2.1"
+  },
+  "keywords": [
+    "openclaw",
+    "subagent",
+    "scheduler",
+    "feishu"
+  ],
+  "author": "OpenClaw",
+  "license": "MIT"
 }
