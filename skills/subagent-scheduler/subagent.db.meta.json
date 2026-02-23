@@ -1,0 +1,10 @@
+{
+  "initialized": true,
+  "createdAt": "2026-02-23T17:17:08.432Z",
+  "tables": [
+    "task_history",
+    "concurrency_state",
+    "checkpoints",
+    "feishu_messages"
+  ]
+}
