@@ -1,159 +1,166 @@
 /**
  * SQLite数据库操作封装
- * 使用 better-sqlite3 或类似的同步SQLite库
- * 由于OpenClaw环境限制，这里使用文件模拟
+ * 使用 better-sqlite3 真实SQLite数据库
  */
 
+const Database = require('better-sqlite3');
 const fs = require('fs');
 const path = require('path');
-const config = require('./config.json');
 
-const DB_PATH = config.database.path;
+const DB_DIR = path.join(__dirname, 'data');
+const DB_PATH = path.join(DB_DIR, 'subagent.db');
+
+let db = null;
 
 /**
- * 初始化数据库（创建表结构）
+ * 初始化数据库
  */
 function initDatabase() {
-  const dbDir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
+  // 创建数据目录
+  if (!fs.existsSync(DB_DIR)) {
+    fs.mkdirSync(DB_DIR, { recursive: true });
   }
   
-  // 读取并执行schema.sql
+  // 打开或创建数据库
+  db = new Database(DB_PATH);
+  
+  // 读取并执行schema
   const schemaPath = path.join(__dirname, 'schema.sql');
   const schema = fs.readFileSync(schemaPath, 'utf-8');
   
-  // 简化：将SQL语句存储到JSON文件模拟
-  // 实际应用中应使用真正的SQLite
-  const metaPath = DB_PATH + '.meta.json';
-  if (!fs.existsSync(metaPath)) {
-    fs.writeFileSync(metaPath, JSON.stringify({
-      initialized: true,
-      createdAt: new Date().toISOString(),
-      tables: ['task_history', 'concurrency_state', 'checkpoints', 'feishu_messages']
-    }, null, 2));
+  // 分割SQL语句并执行
+  const statements = schema.split(';').filter(s => s.trim());
+  for (const stmt of statements) {
+    try {
+      db.exec(stmt);
+    } catch (e) {
+      // 表已存在等错误可以忽略
+      if (!e.message.includes('already exists')) {
+        console.error('Schema error:', e.message);
+      }
+    }
   }
   
+  console.log('[SQLite] 数据库初始化完成:', DB_PATH);
   return true;
 }
 
 /**
- * 模拟数据库查询
- * 实际应用中应使用真正的SQLite
+ * 查询数据
  */
 async function query(sql, params = []) {
-  // 读取数据文件
-  const dataPath = DB_PATH + '.data.json';
-  let data = {};
+  if (!db) initDatabase();
   
-  if (fs.existsSync(dataPath)) {
-    try {
-      data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    } catch (e) {
-      data = {};
+  try {
+    const stmt = db.prepare(sql);
+    
+    // 判断是查询还是执行
+    if (sql.trim().toLowerCase().startsWith('select')) {
+      return stmt.all(...params);
+    } else {
+      return stmt.run(...params);
     }
+  } catch (e) {
+    console.error('[SQLite] Query error:', e.message);
+    throw e;
   }
-  
-  // 简单模拟：返回task_history中匹配的数据
-  if (sql.includes('task_history')) {
-    const history = data.task_history || [];
-    // 简化的WHERE匹配
-    if (params.length > 0 && params[0]) {
-      const prefix = params[0].replace('%', '');
-      return history.filter(h => h.task_hash && h.task_hash.startsWith(prefix));
-    }
-    return history.slice(-10); // 返回最近10条
-  }
-  
-  if (sql.includes('concurrency_state')) {
-    return data.concurrency_state || { running_standard: 0, running_deep: 0 };
-  }
-  
-  return [];
 }
 
 /**
- * 模拟数据库执行
+ * 执行SQL
  */
 async function run(sql, params = []) {
-  const dataPath = DB_PATH + '.data.json';
-  let data = {};
-  
-  if (fs.existsSync(dataPath)) {
-    try {
-      data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    } catch (e) {
-      data = {};
-    }
-  }
-  
-  if (sql.includes('INSERT INTO task_history')) {
-    if (!data.task_history) data.task_history = [];
-    data.task_history.push({
-      id: data.task_history.length + 1,
-      task_hash: params[0],
-      task_preview: params[1],
-      branch: params[2],
-      duration_ms: params[3],
-      estimated_cost: params[4],
-      actual_cost: params[5],
-      success: params[6],
-      retry_count: params[7],
-      error_message: params[8],
-      created_at: new Date().toISOString()
-    });
-  }
-  
-  if (sql.includes('INSERT INTO feishu_messages')) {
-    if (!data.feishu_messages) data.feishu_messages = [];
-    data.feishu_messages.push({
-      id: data.feishu_messages.length + 1,
-      task_id: params[0],
-      message_id: params[1],
-      chat_id: params[2],
-      msg_type: params[3],
-      content_preview: params[4],
-      created_at: new Date().toISOString()
-    });
-  }
-  
-  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
-  return { lastID: 1, changes: 1 };
+  return query(sql, params);
 }
 
 /**
  * 获取历史统计
  */
 async function getHistoryStats(branch = null, days = 7) {
-  const dataPath = DB_PATH + '.data.json';
-  if (!fs.existsSync(dataPath)) return null;
+  if (!db) initDatabase();
   
   try {
-    const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    const history = data.task_history || [];
+    let sql = `
+      SELECT 
+        COUNT(*) as count,
+        AVG(CASE WHEN success = 1 THEN duration_ms END) as avg_duration,
+        SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) as success_rate,
+        AVG(actual_cost) as avg_cost
+      FROM task_history
+      WHERE created_at > datetime('now', '-${days} days')
+    `;
     
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - days);
+    if (branch) {
+      sql += ` AND branch = '${branch}'`;
+    }
     
-    const recent = history.filter(h => {
-      if (branch && h.branch !== branch) return false;
-      return new Date(h.created_at) >= cutoff;
-    });
+    const result = db.prepare(sql).get();
     
-    if (recent.length === 0) return null;
-    
-    const successCount = recent.filter(h => h.success).length;
-    const avgDuration = recent.reduce((sum, h) => sum + (h.duration_ms || 0), 0) / recent.length;
-    const avgCost = recent.reduce((sum, h) => sum + (h.actual_cost || 0), 0) / recent.length;
+    if (!result || result.count === 0) {
+      return null;
+    }
     
     return {
-      count: recent.length,
-      successRate: (successCount / recent.length * 100).toFixed(1),
-      avgDuration: Math.round(avgDuration / 1000),
-      avgCost: avgCost.toFixed(4)
+      count: result.count,
+      successRate: result.success_rate?.toFixed(1) || '0',
+      avgDuration: Math.round((result.avg_duration || 0) / 1000),
+      avgCost: (result.avg_cost || 0).toFixed(4)
     };
   } catch (e) {
+    console.error('[SQLite] Stats error:', e.message);
     return null;
+  }
+}
+
+/**
+ * 插入任务历史
+ */
+async function insertTaskHistory(data) {
+  if (!db) initDatabase();
+  
+  const stmt = db.prepare(`
+    INSERT INTO task_history 
+    (task_hash, task_preview, branch, duration_ms, estimated_cost, actual_cost, success, retry_count, error_message)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  
+  return stmt.run(
+    data.task_hash,
+    data.task_preview,
+    data.branch,
+    data.duration_ms,
+    data.estimated_cost,
+    data.actual_cost,
+    data.success ? 1 : 0,
+    data.retry_count || 0,
+    data.error_message
+  );
+}
+
+/**
+ * 获取相似任务历史
+ */
+async function getSimilarTasks(taskHashPrefix, limit = 10) {
+  if (!db) initDatabase();
+  
+  const stmt = db.prepare(`
+    SELECT branch, duration_ms, success, actual_cost
+    FROM task_history
+    WHERE task_hash LIKE ?
+    ORDER BY created_at DESC
+    LIMIT ?
+  `);
+  
+  return stmt.all(`${taskHashPrefix}%`, limit);
+}
+
+/**
+ * 关闭数据库
+ */
+function closeDatabase() {
+  if (db) {
+    db.close();
+    db = null;
   }
 }
 
@@ -161,5 +168,8 @@ module.exports = {
   initDatabase,
   query,
   run,
-  getHistoryStats
+  getHistoryStats,
+  insertTaskHistory,
+  getSimilarTasks,
+  closeDatabase
 };
