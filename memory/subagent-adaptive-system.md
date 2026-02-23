@@ -22,19 +22,12 @@
 │   - 字数<50 + 无附件 → Simple           │
 │   - 含"批量/所有" → Batch候选           │
 │   - 含"详细/深度" → Deep候选            │
-│   - 置信度>0.8 → 直接返回               │
+│   - 置信度>0.6 → 直接返回               │
 └─────────────────────────────────────────┘
     ↓ 置信度不足
 ┌─────────────────────────────────────────┐
-│ 第二层：LLM轻量分类（低成本模型）        │
-│   输入：任务描述前200字                  │
-│   输出：{分支, 置信度, 预估时间, 预估成本}│
-│   模型：gpt-4.1-mini（成本<$0.001）      │
-└─────────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────────┐
-│ 第三层：试探执行（动态调整）             │
-│   启动后监控前10秒                       │
+│ 第二层：试探执行（动态调整）             │
+│   启动后监控前15秒                       │
 │   - 进度正常 → 维持策略                  │
 │   - 卡住/超时风险 → 自动升级策略         │
 └─────────────────────────────────────────┘
@@ -51,13 +44,10 @@
 function classifyTask(task) {
   // 快速规则
   const fastResult = fastRules(task);
-  if (fastResult.confidence > 0.8) return fastResult;
+  if (fastResult.confidence > 0.6) return fastResult;
   
-  // LLM分类
-  const llmResult = llmClassify(task, {model: 'gpt-4.1-mini'});
-  
-  // 历史校准
-  return calibrateWithHistory(llmResult, task.type);
+  // 试探执行标记（由执行层处理）
+  return {branch: fastResult.branch, probe: true};
 }
 ```
 
@@ -303,31 +293,32 @@ const controls = {
         "mode": "run",
         "cleanup": "delete",
         "timeout": 90,
-        "model": "openai/gpt-4.1-mini",
-        "thinking": "low"
+        "model": "kimi-coding/k2p5",
+        "reasoning": true
       },
       "Batch": {
         "batchSize": 5,
-        "orchestrator": {"model": "kimi-coding/k2p5"},
-        "worker": {"model": "openai/gpt-4.1-mini", "timeout": 60}
+        "orchestrator": {"model": "kimi-coding/k2p5", "reasoning": true},
+        "worker": {"model": "kimi-coding/k2p5", "reasoning": true, "timeout": 60}
       },
       "Orchestrator": {
         "maxSpawnDepth": 2,
-        "model": "anthropic/claude-sonnet-4-5"
+        "model": "kimi-coding/k2p5",
+        "reasoning": true
       },
       "Deep": {
         "mode": "session",
         "thread": true,
         "cleanup": "keep",
-        "model": "anthropic/claude-opus-4-5"
+        "model": "kimi-coding/k2p5",
+        "reasoning": true
       }
     },
     
     "decision": {
       "layers": [
-        {"type": "rules", "confidence": 0.8},
-        {"type": "llm", "model": "gpt-4.1-mini"},
-        {"type": "probe", "duration": 10}
+        {"type": "rules", "confidence": 0.6},
+        {"type": "probe", "duration": 15}
       ]
     },
     
