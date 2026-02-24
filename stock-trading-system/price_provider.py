@@ -1,14 +1,13 @@
 """
 股票价格获取模块 - 支持实时数据
 数据源优先级:
-1. 新浪财经API (当前使用)
-2. AKShare (备用)
-3. Yahoo Finance (备用)
-4. 本地模拟 (仅测试)
+1. iTick API (已验证的真实数据)
+2. 新浪财经API (备用)
+3. AKShare (备用)
+4. Yahoo Finance (备用)
 """
 
 import random
-import time
 import re
 import requests
 from datetime import datetime
@@ -26,6 +25,10 @@ class StockPriceProvider:
         self.base_price = 15.0
         self.current_price = self.base_price
         self.price_history = []
+        
+        # iTick配置
+        self.itick_api_key = '62842c85df6f4665a50620efb853102e609ce22b65a34a41a0a9d3af2685caf1'
+        self.itick_base_url = 'https://api-free.itick.org/stock'
         
         # 加载历史数据
         self._load_history()
@@ -46,11 +49,62 @@ class StockPriceProvider:
         with open(history_file, 'w') as f:
             json.dump(self.price_history[-1000:], f)
     
+    def _format_symbol_itick(self, symbol: str) -> tuple:
+        """转换股票代码格式为iTick格式"""
+        if '.HK' in symbol:
+            code = symbol.replace('.HK', '')
+            region = 'HK'
+        elif '.SZ' in symbol:
+            code = symbol.replace('.SZ', '')
+            region = 'SZ'
+        elif '.SH' in symbol:
+            code = symbol.replace('.SH', '')
+            region = 'SH'
+        else:
+            code = symbol
+            region = 'US'
+        return code, region
+    
+    def get_itick_price(self) -> Optional[Dict]:
+        """从iTick获取实时股价 - 已验证的真实数据源"""
+        try:
+            code, region = self._format_symbol_itick(self.symbol)
+            
+            headers = {'token': self.itick_api_key}
+            url = self.itick_base_url + '/quote'
+            params = {'code': code, 'region': region}
+            
+            response = requests.get(url, params=params, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                if result.get('code') == 0 and result.get('data'):
+                    data = result['data']
+                    
+                    return {
+                        'source': 'itick_real',
+                        'symbol': self.symbol,
+                        'name': data.get('s'),
+                        'price': float(data.get('ld', 0)),
+                        'previous_close': float(data.get('p', 0)),
+                        'open': float(data.get('o', 0)),
+                        'high': float(data.get('h', 0)),
+                        'low': float(data.get('l', 0)),
+                        'volume': int(data.get('v', 0)),
+                        'turnover': float(data.get('tu', 0)),
+                        'change': float(data.get('ch', 0)),
+                        'change_pct': float(data.get('chp', 0)),
+                        'timestamp': datetime.now().isoformat(),
+                        'region': data.get('r')
+                    }
+        except Exception as e:
+            print(f"iTick API error: {e}")
+        
+        return None
+    
     def get_sina_price(self) -> Optional[Dict]:
-        """
-        从新浪财经获取实时股价
-        来源: https://hq.sinajs.cn/
-        """
+        """从新浪财经获取实时股价"""
         try:
             url = f'https://hq.sinajs.cn/list={self.sina_code}'
             headers = {
@@ -63,43 +117,26 @@ class StockPriceProvider:
             if response.status_code == 200:
                 data = response.text
                 
-                # Parse Sina HK format
                 match = re.search(r'\"([^\"]+)\"', data)
                 if match:
                     fields = match.group(1).split(',')
                     
                     if len(fields) >= 10:
-                        # Sina HK stock data format (verified with screenshot):
-                        # [0] English name
-                        # [1] Chinese name
-                        # [2] Open price
-                        # [3] Previous close (昨收)
-                        # [4] High? - need to verify
-                        # [5] Low price
-                        # [6] Close price / Latest (收盘价/最新价)
-                        # [7] Change amount (涨跌额)
-                        # [8] Change percent (涨跌幅%)
-                        # [9] Bid price
-                        # [10] Ask price
-                        
                         return {
                             'source': 'sina_realtime',
                             'symbol': self.symbol,
                             'name': fields[0],
-                            'price': float(fields[6]),      # Close/Latest price
-                            'open': float(fields[2]),       # Open
-                            'high': float(fields[4]),       # High
-                            'low': float(fields[5]),        # Low
-                            'prev_close': float(fields[3]), # Previous close
+                            'price': float(fields[6]),
+                            'open': float(fields[2]),
+                            'high': float(fields[4]),
+                            'low': float(fields[5]),
+                            'prev_close': float(fields[3]),
                             'volume': int(fields[12]) if len(fields) > 12 else 0,
-                            'change': float(fields[7]),     # Change amount
-                            'change_pct': float(fields[8]), # Change percent
-                            'bid': float(fields[9]) if len(fields) > 9 else 0,
-                            'ask': float(fields[10]) if len(fields) > 10 else 0,
+                            'change': float(fields[7]),
+                            'change_pct': float(fields[8]),
                             'timestamp': datetime.now().isoformat(),
                             'market_time': fields[18] if len(fields) > 18 else ''
                         }
-                        
         except Exception as e:
             print(f"Sina API error: {e}")
         
@@ -161,12 +198,7 @@ class StockPriceProvider:
         return None
     
     def get_simulated_price(self) -> Dict:
-        """
-        获取模拟股价（仅用于测试和调试！）
-        
-        WARNING: SIMULATED DATA - FOR TESTING ONLY
-        DO NOT USE FOR TRADING DECISIONS
-        """
+        """获取模拟股价（仅用于测试和调试！）"""
         change = random.gauss(0, 0.005)
         self.current_price *= (1 + change)
         
@@ -196,11 +228,12 @@ class StockPriceProvider:
         
         return data
     
-    def get_price(self, use_network: bool = True) -> Dict:
+    def get_price(self, use_network: bool = True, allow_simulated: bool = False) -> Dict:
         """获取股价（自动选择最佳方案）"""
         if use_network:
-            # 尝试顺序: Sina -> AKShare -> Yahoo
+            # 尝试顺序: iTick -> Sina -> AKShare -> Yahoo
             for method_name, method in [
+                ('iTick', self.get_itick_price),
                 ('Sina', self.get_sina_price),
                 ('AKShare', self.get_akshare_price),
                 ('Yahoo', self.get_yahoo_price)
@@ -213,11 +246,19 @@ class StockPriceProvider:
                     print(f"{method_name} failed: {e}")
                     continue
             
-            print("All network sources failed, using simulated data")
-        else:
-            print("Network disabled, using simulated data (FOR TESTING ONLY)")
+            if not allow_simulated:
+                raise Exception(
+                    "CRITICAL: All real data sources failed! "
+                    "Cannot get stock price for production use. "
+                    "Simulated data is strictly prohibited for trading!"
+                )
+            
+            print("WARNING: All network sources failed, using simulated data")
         
-        return self.get_simulated_price()
+        if allow_simulated:
+            return self.get_simulated_price()
+        else:
+            raise Exception("Simulated data is disabled for production use")
 
 
 # 全局实例
@@ -237,21 +278,20 @@ if __name__ == "__main__":
     print()
     
     provider = StockPriceProvider('1810.HK')
-    price = provider.get_price(use_network=True)
     
-    print(f"\nSymbol: {price['symbol']}")
-    print(f"Source: {price['source']}")
-    print(f"Price: HK$ {price['price']:.3f}")
-    
-    if price['source'] == 'simulated':
-        print(f"\n⚠️  WARNING: {price.get('warning', 'SIMULATED DATA')}")
-    else:
+    try:
+        price = provider.get_price(use_network=True, allow_simulated=False)
+        
+        print(f"\nSymbol: {price['symbol']}")
+        print(f"Source: {price['source']}")
+        print(f"Price: HK$ {price['price']:.3f}")
         print(f"Open: HK$ {price['open']:.3f}")
         print(f"High: HK$ {price['high']:.3f}")
         print(f"Low: HK$ {price['low']:.3f}")
         print(f"Change: {price.get('change_pct', 0):+.2f}%")
-        if 'market_time' in price:
-            print(f"Market Time: {price['market_time']}")
+        print(f"\nTimestamp: {price['timestamp']}")
+        
+    except Exception as e:
+        print(f"Error: {e}")
     
-    print(f"\nTimestamp: {price['timestamp']}")
     print("="*60)

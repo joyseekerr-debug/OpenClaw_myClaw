@@ -44,83 +44,163 @@ class DataSource(ABC):
 
 
 class iTickSource(DataSource):
-    """iTick数据源 - 主要数据源"""
+    """iTick数据源 - 真实API实现"""
     
     def __init__(self, config: dict):
         super().__init__('iTick', config)
-        self.api_key = config.get('api_key')
-        self.base_url = config.get('base_url', 'https://api.itick.com')
+        self.api_key = config.get('api_key', '62842c85df6f4665a50620efb853102e609ce22b65a34a41a0a9d3af2685caf1')
+        self.base_url = config.get('base_url', 'https://api-free.itick.org/stock')
     
     def connect(self) -> bool:
         """连接iTick API"""
         try:
-            # 实际实现需要导入iTick SDK
-            # import itick
-            # self.client = itick.Client(self.api_key)
-            self.is_connected = True
-            logger.info("✅ iTick数据源连接成功")
-            return True
+            # 测试连接
+            import requests
+            headers = {'token': self.api_key}
+            url = self.base_url + '/quote'
+            params = {'code': '1810', 'region': 'HK'}
+            
+            response = requests.get(url, params=params, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('code') == 0:
+                    self.is_connected = True
+                    logger.info("iTick datasource connected (real API)")
+                    return True
+            
+            logger.error(f"iTick connection failed: {response.status_code}")
+            self.is_connected = False
+            return False
+            
         except Exception as e:
-            logger.error(f"❌ iTick连接失败: {e}")
+            logger.error(f"iTick connection error: {e}")
             self.is_connected = False
             return False
     
+    def _format_symbol(self, symbol: str) -> tuple:
+        """转换股票代码格式"""
+        if '.HK' in symbol:
+            code = symbol.replace('.HK', '')
+            region = 'HK'
+        elif '.SZ' in symbol:
+            code = symbol.replace('.SZ', '')
+            region = 'SZ'
+        elif '.SH' in symbol:
+            code = symbol.replace('.SH', '')
+            region = 'SH'
+        else:
+            code = symbol
+            region = 'US'
+        return code, region
+    
     def get_realtime_data(self, symbol: str) -> Optional[pd.DataFrame]:
-        """获取实时tick数据"""
+        """获取实时行情数据 - 使用真实iTick API"""
         if not self.is_connected:
-            return None
+            if not self.connect():
+                return None
         
         try:
-            # 模拟数据 - 实际应调用iTick API
-            data = {
-                'timestamp': [datetime.now()],
-                'symbol': [symbol],
-                'price': [15.5],
-                'volume': [1000],
-                'bid': [15.48],
-                'ask': [15.52],
-                'bid_volume': [500],
-                'ask_volume': [600]
-            }
-            return pd.DataFrame(data)
+            import requests
+            code, region = self._format_symbol(symbol)
+            
+            headers = {'token': self.api_key}
+            url = self.base_url + '/quote'
+            params = {'code': code, 'region': region}
+            
+            response = requests.get(url, params=params, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                if result.get('code') == 0 and result.get('data'):
+                    data = result['data']
+                    
+                    # 转换为DataFrame格式
+                    df_data = {
+                        'timestamp': [datetime.now()],
+                        'symbol': [symbol],
+                        'price': [float(data.get('ld', 0))],  # 最新价
+                        'open': [float(data.get('o', 0))],
+                        'high': [float(data.get('h', 0))],
+                        'low': [float(data.get('l', 0))],
+                        'prev_close': [float(data.get('p', 0))],
+                        'volume': [int(data.get('v', 0))],
+                        'change': [float(data.get('ch', 0))],
+                        'change_pct': [float(data.get('chp', 0))],
+                        'source': ['itick_real']
+                    }
+                    
+                    logger.info(f"iTick real data fetched: {symbol} @ {data.get('ld')}")
+                    return pd.DataFrame(df_data)
+                else:
+                    logger.warning(f"iTick returned no data for {symbol}")
+                    return None
+            else:
+                logger.error(f"iTick API error: {response.status_code}")
+                return None
+                
         except Exception as e:
-            logger.error(f"iTick实时数据获取失败: {e}")
+            logger.error(f"iTick realtime data error: {e}")
             return None
     
     def get_historical_data(self, symbol: str, start: str, end: str,
                            interval: str = '1d') -> Optional[pd.DataFrame]:
         """获取历史K线数据"""
         if not self.is_connected:
-            return None
+            if not self.connect():
+                return None
         
         try:
-            # 模拟历史数据
-            dates = pd.date_range(start=start, end=end, freq=interval)
-            np.random.seed(42)
-            base_price = 15.0
+            import requests
+            code, region = self._format_symbol(symbol)
             
-            data = []
-            for date in dates:
-                change = np.random.normal(0, 0.02)
-                close = base_price * (1 + change)
-                open_price = close * (1 + np.random.normal(0, 0.005))
-                high = max(open_price, close) * (1 + abs(np.random.normal(0, 0.01)))
-                low = min(open_price, close) * (1 - abs(np.random.normal(0, 0.01)))
-                volume = int(np.random.randint(1000000, 10000000))
+            # iTick K线类型映射
+            ktype_map = {
+                '1m': '1', '5m': '5', '15m': '15', '30m': '30', '60m': '60',
+                '1d': '101', '1w': '102', '1M': '103'
+            }
+            ktype = ktype_map.get(interval, '101')
+            
+            headers = {'token': self.api_key}
+            url = self.base_url + '/kline'
+            params = {'code': code, 'region': region, 'kType': ktype, 'count': '100'}
+            
+            response = requests.get(url, params=params, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
                 
-                data.append({
-                    'timestamp': date,
-                    'open': round(open_price, 2),
-                    'high': round(high, 2),
-                    'low': round(low, 2),
-                    'close': round(close, 2),
-                    'volume': volume
-                })
-                base_price = close
-            
-            return pd.DataFrame(data)
+                if result.get('code') == 0 and result.get('data'):
+                    klines = result['data']
+                    
+                    data = []
+                    for k in klines:
+                        data.append({
+                            'timestamp': datetime.fromtimestamp(k.get('t', 0) / 1000),
+                            'open': float(k.get('o', 0)),
+                            'high': float(k.get('h', 0)),
+                            'low': float(k.get('l', 0)),
+                            'close': float(k.get('c', 0)),
+                            'volume': int(k.get('v', 0))
+                        })
+                    
+                    df = pd.DataFrame(data)
+                    
+                    # 过滤日期范围
+                    if not df.empty:
+                        df = df[(df['timestamp'] >= start) & (df['timestamp'] <= end)]
+                    
+                    return df
+                else:
+                    logger.warning(f"iTick returned no kline data for {symbol}")
+                    return None
+            else:
+                logger.error(f"iTick kline API error: {response.status_code}")
+                return None
+                
         except Exception as e:
-            logger.error(f"iTick历史数据获取失败: {e}")
+            logger.error(f"iTick historical data error: {e}")
             return None
 
 
