@@ -98,7 +98,10 @@ class StockPriceProvider:
     
     def get_simulated_price(self) -> Dict:
         """
-        获取模拟股价（用于测试和网络不可用时）
+        获取模拟股价（仅用于测试和调试！）
+        
+        ⚠️ 警告: 模拟数据不能用于实际交易决策！
+        ⚠️ 生产环境必须使用真实数据源！
         """
         # 模拟价格变动
         change = random.gauss(0, 0.005)  # 正态分布，标准差0.5%
@@ -115,6 +118,7 @@ class StockPriceProvider:
         
         data = {
             'source': 'simulated',
+            'warning': 'SIMULATED DATA - FOR TESTING ONLY - DO NOT USE FOR TRADING',
             'symbol': self.symbol,
             'price': round(self.current_price, 3),
             'open': round(open_price, 3),
@@ -148,9 +152,11 @@ class StockPriceProvider:
             network_data = self.get_real_time_price_network()
             if network_data:
                 return network_data
-            print("⚠️ 网络获取失败，使用模拟数据")
+            print("⚠️  网络获取失败，切换到模拟数据（仅用于测试）")
+        else:
+            print("⚠️  使用模拟数据（仅用于测试，不可用于交易）")
         
-        # 使用模拟数据
+        # 使用模拟数据（仅用于测试）
         return self.get_simulated_price()
     
     def start_realtime_feed(self, callback=None, interval: int = 5):
