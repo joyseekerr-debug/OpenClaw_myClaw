@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from loguru import logger
 from config import SYSTEM_CONFIG, LOG_CONFIG, TARGET_STOCK
+from price_provider import get_price_provider
 
 # 配置日志
 logger.add(
@@ -96,12 +97,31 @@ class StockTradingSystem:
             else:
                 logger.warning("⚠️ 数据管道测试未通过")
             
+            # 测试实时价格获取
+            self.test_realtime_price()
+            
             # 这里可以启动实时监控等
             logger.info("📈 系统运行中...")
             
         except Exception as e:
             logger.error(f"❌ 系统运行失败: {e}")
             raise
+    
+    def test_realtime_price(self):
+        """测试实时价格获取"""
+        logger.info("💰 测试实时价格获取...")
+        
+        try:
+            provider = get_price_provider(TARGET_STOCK['symbol'])
+            price_data = provider.get_price(use_network=False)
+            
+            logger.info(f"✅ 价格获取成功!")
+            logger.info(f"   股票: {price_data['symbol']}")
+            logger.info(f"   价格: HK$ {price_data['price']:.3f}")
+            logger.info(f"   涨跌: {price_data['change_pct']:+.2f}%")
+            
+        except Exception as e:
+            logger.error(f"❌ 价格获取失败: {e}")
     
     def shutdown(self):
         """关闭系统"""
