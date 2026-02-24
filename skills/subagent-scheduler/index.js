@@ -341,20 +341,34 @@ class SubagentScheduler {
   }
 
   /**
-   * 启动每日学习定时任务
+   * 启动每日学习定时任务（6点分析，9点推送）
    * @param {string} chatId - 飞书聊天ID（可选）
-   * @param {string} schedule - cron表达式，默认每天9点
    */
-  startDailyLearning(chatId = null, schedule = '0 9 * * *') {
-    const feishuSender = chatId ? async (card) => {
-      await feishu.sendMessage(chatId, card);
-    } : null;
+  startDailyLearning(chatId = null) {
+    // 启动6点分析任务
+    this.cronManager.startLearningAnalysis(this.learningEngine);
     
-    return this.cronManager.startLearningTask(
-      this.learningEngine,
-      feishuSender,
-      schedule
-    );
+    // 如果有chatId，启动9点推送任务
+    if (chatId) {
+      const feishuSender = async (card) => {
+        await feishu.sendMessage(chatId, card);
+      };
+      this.cronManager.startLearningReport(this.learningEngine, feishuSender);
+    }
+    
+    return ['daily-learning-analysis', 'daily-learning-report'];
+  }
+
+  /**
+   * 手动发送学习报告
+   * @param {string} chatId - 飞书聊天ID
+   * @param {string} date - 报告日期，null表示最新
+   */
+  async sendLearningReport(chatId, date = null) {
+    const feishuSender = async (card) => {
+      await feishu.sendMessage(chatId, card);
+    };
+    return await this.learningEngine.sendReport(date, feishuSender);
   }
 
   /**

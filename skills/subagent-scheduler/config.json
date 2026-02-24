@@ -58,7 +58,8 @@
     "enabled": true,
     "learning": {
       "enabled": true,
-      "schedule": "0 9 * * *",
+      "analysisSchedule": "0 6 * * *",
+      "reportSchedule": "0 9 * * *",
       "minSamples": 5,
       "adjustmentThreshold": 0.1,
       "outputDir": "./learning-reports"

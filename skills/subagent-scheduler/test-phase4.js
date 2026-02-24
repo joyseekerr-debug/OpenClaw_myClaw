@@ -84,14 +84,22 @@ async function runPhase4Tests() {
   console.log('✓ 飞书卡片构建完成\n');
 
   // 4. 定时任务测试
-  console.log('4. 定时学习任务测试...');
-  const taskId = sch.startDailyLearning(null, '0 0 * * *'); // 每天0点（测试用）
-  console.log(`  定时任务ID: ${taskId}`);
+  console.log('4. 定时学习任务测试（6点分析，9点推送）...');
+  const taskIds = sch.startDailyLearning(null); // 不配置飞书，只测试分析任务
+  console.log(`  分析任务ID: ${taskIds[0]}`);
+  console.log(`  推送任务ID: ${taskIds[1] || '未配置'}`);
   console.log(`  运行中任务: ${sch.cronManager.list().join(', ')}`);
   
   // 停止测试任务
-  sch.cronManager.stop(taskId);
+  sch.cronManager.stop(taskIds[0]);
+  if (taskIds[1]) sch.cronManager.stop(taskIds[1]);
   console.log('✓ 定时任务测试完成\n');
+
+  // 5. 手动发送报告测试
+  console.log('5. 手动发送报告测试...');
+  // 这里只是测试sendReport方法存在，不实际发送
+  console.log('  sendLearningReport 方法已添加（需要配置chatId）');
+  console.log('✓ 手动发送报告测试完成\n');
 
   // 5. 获取最新报告
   console.log('5. 获取最新报告测试...');

@@ -29,7 +29,7 @@ class LearningEngine extends EventEmitter {
   }
 
   /**
-   * 执行每日学习
+   * 执行每日学习（仅分析，不发送报告）
    */
   async dailyLearning() {
     const date = new Date().toISOString().split('T')[0];
@@ -78,6 +78,43 @@ class LearningEngine extends EventEmitter {
     });
     
     return report;
+  }
+
+  /**
+   * 发送报告（单独调用，用于定时推送）
+   * @param {string} date - 报告日期，默认为最新
+   * @param {Function} feishuSender - 飞书发送函数
+   */
+  async sendReport(date = null, feishuSender) {
+    let report;
+    
+    if (date) {
+      // 加载指定日期的报告
+      const filepath = path.join(this.outputDir, `learning-report-${date}.json`);
+      if (fs.existsSync(filepath)) {
+        report = JSON.parse(fs.readFileSync(filepath, 'utf-8'));
+      } else {
+        throw new Error(`未找到 ${date} 的报告`);
+      }
+    } else {
+      // 获取最新报告
+      report = this.getLatestReport();
+    }
+    
+    if (!report) {
+      throw new Error('没有可用的报告');
+    }
+    
+    if (!feishuSender) {
+      throw new Error('需要提供飞书发送函数');
+    }
+    
+    const card = this.buildFeishuCard(report);
+    await feishuSender(card);
+    
+    this.emit('report-sent', { date: report.date });
+    
+    return { sent: true, date: report.date };
   }
 
   /**

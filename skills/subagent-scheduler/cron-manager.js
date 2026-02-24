@@ -119,32 +119,64 @@ class CronManager extends EventEmitter {
   }
 
   /**
-   * 启动学习引擎定时任务
+   * 启动学习分析定时任务（每天6点）
+   * @param {LearningEngine} learningEngine - 学习引擎实例
+   * @param {string} schedule - cron表达式，默认每天6点
+   */
+  startLearningAnalysis(learningEngine, schedule = '0 6 * * *') {
+    const task = cron.schedule(schedule, async () => {
+      console.log('[Cron] 执行每日学习分析...');
+      try {
+        await learningEngine.dailyLearning();
+        console.log('[Cron] 每日学习分析完成');
+      } catch (error) {
+        console.error('[Cron] 每日学习分析失败:', error);
+      }
+    }, { scheduled: true, timezone: 'Asia/Shanghai' });
+    
+    this.tasks.set('daily-learning-analysis', task);
+    console.log('[Cron] 学习分析任务已启动，每天6:00执行');
+    return 'daily-learning-analysis';
+  }
+
+  /**
+   * 启动学习报告推送定时任务（每天9点）
    * @param {LearningEngine} learningEngine - 学习引擎实例
    * @param {Function} feishuSender - 飞书发送函数
    * @param {string} schedule - cron表达式，默认每天9点
    */
-  startLearningTask(learningEngine, feishuSender = null, schedule = '0 9 * * *') {
+  startLearningReport(learningEngine, feishuSender, schedule = '0 9 * * *') {
     const task = cron.schedule(schedule, async () => {
-      console.log('[Cron] 执行每日学习...');
+      console.log('[Cron] 推送学习报告...');
       try {
-        const report = await learningEngine.dailyLearning();
-        
-        // 如果有飞书发送函数，推送报告
         if (feishuSender) {
-          const card = learningEngine.buildFeishuCard(report);
-          await feishuSender(card);
+          await learningEngine.sendReport(null, feishuSender);
+          console.log('[Cron] 学习报告推送完成');
+        } else {
+          console.log('[Cron] 未配置飞书发送函数，跳过推送');
         }
-        
-        console.log('[Cron] 每日学习完成');
       } catch (error) {
-        console.error('[Cron] 每日学习失败:', error);
+        console.error('[Cron] 学习报告推送失败:', error);
       }
     }, { scheduled: true, timezone: 'Asia/Shanghai' });
     
-    this.tasks.set('daily-learning', task);
-    console.log('[Cron] 学习引擎任务已启动，每天9:00执行');
-    return 'daily-learning';
+    this.tasks.set('daily-learning-report', task);
+    console.log('[Cron] 学习报告推送任务已启动，每天9:00执行');
+    return 'daily-learning-report';
+  }
+
+  /**
+   * 启动学习引擎定时任务（兼容旧版，6点分析+9点推送）
+   * @param {LearningEngine} learningEngine - 学习引擎实例
+   * @param {Function} feishuSender - 飞书发送函数
+   */
+  startLearningTask(learningEngine, feishuSender = null) {
+    // 启动两个分开的任务
+    this.startLearningAnalysis(learningEngine);
+    if (feishuSender) {
+      this.startLearningReport(learningEngine, feishuSender);
+    }
+    return ['daily-learning-analysis', 'daily-learning-report'];
   }
 
   /**

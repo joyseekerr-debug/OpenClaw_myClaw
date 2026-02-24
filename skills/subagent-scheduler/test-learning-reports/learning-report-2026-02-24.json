@@ -1,8 +1,8 @@
 {
   "date": "2026-02-24",
   "summary": {
-    "totalTasks": 78,
-    "avgSuccessRate": "80.8",
+    "totalTasks": 96,
+    "avgSuccessRate": "81.3",
     "recommendationCount": 7,
     "autoAdjustments": 0
   },
@@ -14,22 +14,22 @@
       "costAccuracy": 0.0020000000000000018
     },
     "Deep": {
-      "count": 12,
+      "count": 15,
       "successRate": 100,
       "avgDuration": 300000,
       "costAccuracy": 299999.95
     },
     "Simple": {
-      "count": 26,
-      "successRate": 96.2,
-      "avgDuration": 6692,
-      "costAccuracy": 4615.383384615385
+      "count": 32,
+      "successRate": 96.9,
+      "avgDuration": 6094,
+      "costAccuracy": 4687.49871875
     },
     "Standard": {
-      "count": 38,
-      "successRate": 65.8,
-      "avgDuration": 73947,
-      "costAccuracy": 42631.57115789474
+      "count": 47,
+      "successRate": 66,
+      "avgDuration": 74149,
+      "costAccuracy": 43085.0984893617
     },
     "Unknown": {
       "count": 1,
@@ -40,7 +40,7 @@
   },
   "duration": {
     "Deep": {
-      "count": 12,
+      "count": 15,
       "median": 300000,
       "p90": 300000,
       "p95": 300000,
@@ -50,39 +50,39 @@
       "biasPercent": 0
     },
     "Simple": {
-      "count": 25,
+      "count": 31,
       "median": 4000,
       "p90": 4000,
       "p95": 4000,
-      "avgActual": 4560,
+      "avgActual": 4355,
       "avgEstimated": 5000,
-      "bias": -440,
-      "biasPercent": -9
+      "bias": -645,
+      "biasPercent": -13
     },
     "Standard": {
-      "count": 25,
+      "count": 31,
       "median": 70000,
       "p90": 120000,
       "p95": 120000,
-      "avgActual": 82000,
+      "avgActual": 82097,
       "avgEstimated": 45000,
-      "bias": 37000,
+      "bias": 37097,
       "biasPercent": 82
     }
   },
   "cost": {
     "Simple": {
-      "count": 25,
-      "avgErrorPercent": "96.2",
-      "mape": "96.2"
+      "count": 31,
+      "avgErrorPercent": "96.9",
+      "mape": "96.9"
     },
     "Standard": {
-      "count": 25,
-      "avgErrorPercent": "96.2",
-      "mape": "96.2"
+      "count": 31,
+      "avgErrorPercent": "96.9",
+      "mape": "96.9"
     },
     "Deep": {
-      "count": 12,
+      "count": 15,
       "avgErrorPercent": "100.0",
       "mape": "100.0"
     }
@@ -96,24 +96,24 @@
       "avgRetries": "0.00"
     },
     "Deep": {
-      "total": 12,
-      "success": 12,
+      "total": 15,
+      "success": 15,
       "failed": 0,
       "successRate": 100,
       "avgRetries": "0.00"
     },
     "Simple": {
-      "total": 26,
-      "success": 25,
+      "total": 32,
+      "success": 31,
       "failed": 1,
-      "successRate": 96.2,
+      "successRate": 96.9,
       "avgRetries": "0.00"
     },
     "Standard": {
-      "total": 38,
-      "success": 25,
-      "failed": 13,
-      "successRate": 65.8,
+      "total": 47,
+      "success": 31,
+      "failed": 16,
+      "successRate": 66,
       "avgRetries": "0.00"
     },
     "Unknown": {
@@ -128,7 +128,7 @@
     {
       "type": "classification",
       "priority": "high",
-      "message": "Standard分支成功率仅65.8%，可能有任务被误判为Standard",
+      "message": "Standard分支成功率仅66%，可能有任务被误判为Standard",
       "suggestion": "降低Simple分支的置信度阈值，让更多任务使用更高层级策略",
       "autoApplicable": false
     },
@@ -137,16 +137,16 @@
       "branch": "Standard",
       "priority": "high",
       "message": "Standard分支实际耗时比预估高82%",
-      "suggestion": "建议将Standard的超时时间从45000ms调整为98400ms",
+      "suggestion": "建议将Standard的超时时间从45000ms调整为98516ms",
       "currentValue": 45000,
-      "suggestedValue": 98400,
+      "suggestedValue": 98516,
       "autoApplicable": true
     },
     {
       "type": "success_rate",
       "branch": "Standard",
       "priority": "high",
-      "message": "Standard分支成功率仅65.8%",
+      "message": "Standard分支成功率仅66%",
       "suggestion": "建议增加重试次数或降级到更稳定的策略",
       "autoApplicable": true
     },
@@ -162,7 +162,7 @@
       "type": "cost",
       "branch": "Simple",
       "priority": "medium",
-      "message": "Simple分支成本预估误差96.2%过高",
+      "message": "Simple分支成本预估误差96.9%过高",
       "suggestion": "需要校准成本预估模型参数",
       "autoApplicable": false
     },
@@ -170,7 +170,7 @@
       "type": "cost",
       "branch": "Standard",
       "priority": "medium",
-      "message": "Standard分支成本预估误差96.2%过高",
+      "message": "Standard分支成本预估误差96.9%过高",
       "suggestion": "需要校准成本预估模型参数",
       "autoApplicable": false
     },
