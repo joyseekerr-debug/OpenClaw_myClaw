@@ -17,6 +17,10 @@ const { LayeredContext } = require('./layered-context');
 const { PolicyManager } = require('./policy-manager');
 const { TracingManager } = require('./tracing-manager');
 const { LearningEngine } = require('./learning-engine');
+const { AgentRegistry } = require('./agent-registry');
+const { TaskDecomposer } = require('./task-decomposer');
+const { AgentRouter, RoutingStrategy } = require('./agent-router');
+const { ResultAggregator, AggregationStrategy } = require('./result-aggregator');
 const config = require('./config.json');
 
 // 可选模块（需要外部依赖）
@@ -69,6 +73,15 @@ class SubagentScheduler {
       minSamples: config.phase4?.learning?.minSamples || 5
     });
     
+    // Multi-Agent: 多 agents 协作组件
+    this.agentRegistry = new AgentRegistry(options.agentRegistry || {});
+    this.taskDecomposer = new TaskDecomposer(options.taskDecomposer || {});
+    this.agentRouter = new AgentRouter(this.agentRegistry, options.agentRouter || {});
+    this.resultAggregator = new ResultAggregator(options.resultAggregator || {});
+    
+    // 创建默认本地 agents
+    this.setupDefaultAgents();
+    
     // 初始化并发控制
     this.initConcurrency(options.redis);
   }
@@ -103,9 +116,242 @@ class SubagentScheduler {
   }
 
   /**
-   * 执行任务（完整流程）
+   * 设置默认本地 Agents
+   */
+  setupDefaultAgents() {
+    // 简单 Agent - 处理快速任务
+    this.agentRegistry.createLocalAgent('SimpleAgent', {
+      capabilities: ['read', 'write', 'simple_analysis'],
+      maxConcurrent: 5,
+      metadata: { type: 'simple', costLevel: 'low' }
+    });
+    
+    // 标准 Agent - 处理常规任务
+    this.agentRegistry.createLocalAgent('StandardAgent', {
+      capabilities: ['read', 'write', 'analyze', 'search'],
+      maxConcurrent: 3,
+      metadata: { type: 'standard', costLevel: 'medium' }
+    });
+    
+    // 深度 Agent - 处理复杂任务
+    this.agentRegistry.createLocalAgent('DeepAgent', {
+      capabilities: ['read', 'write', 'analyze', 'deep_research', 'reasoning'],
+      maxConcurrent: 1,
+      metadata: { type: 'deep', costLevel: 'high' }
+    });
+    
+    console.log('[Scheduler] 默认 Agents 已创建');
+  }
+
+  /**
+   * 判断是否需要使用多 Agent
+   */
+  async shouldUseMultiAgent(task) {
+    const analysis = this.taskDecomposer.analyzeComplexity(task);
+    return analysis.shouldDecompose && analysis.estimatedSubtasks > 2;
+  }
+
+  /**
+   * 执行多 Agent 协作任务
+   */
+  async executeMultiAgent(task, options = {}) {
+    const startTime = Date.now();
+    const taskId = `multi_${Date.now()}`;
+    
+    console.log(`[MultiAgent] 开始执行多 Agent 任务: ${taskId}`);
+    this.emit('multiagent-started', { taskId, task: task.substring(0, 100) });
+    
+    try {
+      // 1. 分解任务
+      const dag = await this.taskDecomposer.decompose(task, options.decompose);
+      console.log(`[MultiAgent] 任务分解完成: ${dag.totalSubtasks} 个子任务`);
+      
+      // 2. 路由所有子任务
+      const routes = await this.routeSubtasks(dag);
+      console.log(`[MultiAgent] 子任务路由完成: ${routes.size} 个路由`);
+      
+      // 3. 执行 DAG
+      const results = await this.executeDAG(dag, routes, options);
+      console.log(`[MultiAgent] DAG 执行完成: ${results.size} 个结果`);
+      
+      // 4. 聚合结果
+      const aggregated = await this.resultAggregator.aggregateByDAG(dag, results);
+      console.log(`[MultiAgent] 结果聚合完成`);
+      
+      const duration = Date.now() - startTime;
+      
+      this.emit('multiagent-completed', { taskId, duration });
+      
+      return {
+        success: true,
+        taskId,
+        strategy: 'multi_agent',
+        subtaskCount: dag.totalSubtasks,
+        result: aggregated.result,
+        duration,
+        dag: {
+          parallelGroups: dag.parallelGroups.length,
+          totalSubtasks: dag.totalSubtasks
+        }
+      };
+      
+    } catch (error) {
+      this.emit('multiagent-error', { taskId, error });
+      throw error;
+    }
+  }
+
+  /**
+   * 路由子任务
+   */
+  async routeSubtasks(dag) {
+    const routes = new Map();
+    const completed = new Set();
+    
+    for (const group of dag.parallelGroups) {
+      // 获取当前组可执行的子任务
+      const executable = dag.subtasks.filter(st => {
+        if (routes.has(st.id)) return false;
+        return st.dependsOn.every(depId => completed.has(depId));
+      });
+      
+      // 并行路由
+      const routePromises = executable.map(async subtask => {
+        try {
+          const route = await this.agentRouter.route(subtask, {
+            strategy: RoutingStrategy.CAPABILITY_MATCH
+          });
+          routes.set(subtask.id, { ...route, subtask });
+          return { success: true, subtaskId: subtask.id };
+        } catch (error) {
+          console.error(`[MultiAgent] 路由失败: ${subtask.id}`, error.message);
+          return { success: false, subtaskId: subtask.id, error };
+        }
+      });
+      
+      await Promise.all(routePromises);
+      
+      // 标记为已完成（路由阶段）
+      executable.forEach(st => completed.add(st.id));
+    }
+    
+    return routes;
+  }
+
+  /**
+   * 执行 DAG
+   */
+  async executeDAG(dag, routes, options = {}) {
+    const results = new Map();
+    const completed = new Set();
+    
+    for (const group of dag.parallelGroups) {
+      // 获取当前组可执行的子任务
+      const executable = group.filter(id => {
+        const route = routes.get(id);
+        if (!route) return false;
+        
+        const subtask = dag.subtasks.find(st => st.id === id);
+        if (!subtask) return false;
+        
+        return subtask.dependsOn.every(depId => completed.has(depId));
+      });
+      
+      // 并行执行
+      const executePromises = executable.map(async id => {
+        const route = routes.get(id);
+        const subtask = dag.subtasks.find(st => st.id === id);
+        
+        try {
+          // 模拟执行子任务（实际应调用 agent 执行）
+          const result = await this.executeSubtask(route, subtask, options);
+          
+          results.set(id, result);
+          completed.add(id);
+          
+          // 更新 Agent 负载
+          this.agentRegistry.updateLoad(route.agentId, -1);
+          
+          return { success: true, subtaskId: id };
+        } catch (error) {
+          console.error(`[MultiAgent] 子任务执行失败: ${id}`, error.message);
+          
+          // 尝试重路由
+          if (options.retry !== false) {
+            try {
+              const newRoute = await this.agentRouter.reRoute(route);
+              const result = await this.executeSubtask(newRoute, subtask, options);
+              results.set(id, result);
+              completed.add(id);
+              return { success: true, subtaskId: id, retried: true };
+            } catch (retryError) {
+              return { success: false, subtaskId: id, error: retryError };
+            }
+          }
+          
+          return { success: false, subtaskId: id, error };
+        }
+      });
+      
+      await Promise.all(executePromises);
+    }
+    
+    return results;
+  }
+
+  /**
+   * 执行单个子任务
+   */
+  async executeSubtask(route, subtask, options) {
+    // 这里应该调用实际的 agent 执行
+    // 简化：使用现有的调度器执行
+    
+    const agent = this.agentRegistry.getAgent(route.agentId);
+    
+    console.log(`[MultiAgent] Agent ${agent.name} 执行子任务: ${subtask.id}`);
+    
+    // 根据 agent 类型选择分支
+    let branch = 'Standard';
+    if (agent.metadata?.type === 'simple') branch = 'Simple';
+    if (agent.metadata?.type === 'deep') branch = 'Deep';
+    
+    // 使用现有调度器执行
+    const result = await this.execute({
+      task: subtask.task,
+      forceBranch: branch,
+      ...options
+    });
+    
+    return {
+      subtaskId: subtask.id,
+      result: result.result,
+      success: result.success,
+      agentId: route.agentId,
+      agentName: agent.name,
+      duration: result.duration
+    };
+  }
+
+  /**
+   * 主执行函数（整合多 Agent）
    */
   async execute(taskInput, options = {}) {
+    const task = typeof taskInput === 'string' ? taskInput : taskInput.task;
+    
+    // 判断是否使用多 Agent
+    if (options.multiAgent !== false && await this.shouldUseMultiAgent(task)) {
+      console.log('[Scheduler] 使用多 Agent 协作模式');
+      return await this.executeMultiAgent(task, options);
+    }
+    
+    // 使用原有的单 Agent 调度
+    return await this.executeSingle(taskInput, options);
+  }
+
+  /**
+   * 单 Agent 执行（原有的 execute 逻辑）
+   */
+  async executeSingle(taskInput, options = {}) {
     const startTime = Date.now();
     const task = typeof taskInput === 'string' ? taskInput : taskInput.task;
     const chatId = options.chatId || config.feishu.defaultChatId;
@@ -417,6 +663,13 @@ module.exports = {
     await scheduler.init();
     return scheduler.generateDailyReport(chatId);
   },
+  // 多 Agents 模块
+  AgentRegistry,
+  TaskDecomposer,
+  AgentRouter,
+  RoutingStrategy,
+  ResultAggregator,
+  AggregationStrategy,
   // 子模块
   scheduler,
   database,

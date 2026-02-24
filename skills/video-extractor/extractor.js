@@ -11,13 +11,18 @@ const os = require('os');
 
 const execAsync = promisify(exec);
 
+// Python 路径配置
+const PYTHON_PATH = 'C:\\Users\\Jhon\\AppData\\Local\\Programs\\Python\\Python311\\python.exe';
+const YTDLP_PATH = 'C:\\Users\\Jhon\\AppData\\Local\\Programs\\Python\\Python311\\Scripts\\yt-dlp.exe';
+
 /**
  * 视频提取器类
  */
 class VideoExtractor {
   constructor(options = {}) {
     this.tempDir = options.tempDir || path.join(os.tmpdir(), 'video-extractor');
-    this.ytDlpPath = options.ytDlpPath || 'yt-dlp';
+    this.pythonPath = options.pythonPath || PYTHON_PATH;
+    this.ytDlpPath = options.ytDlpPath || YTDLP_PATH;
     
     // 确保临时目录存在
     if (!fs.existsSync(this.tempDir)) {
