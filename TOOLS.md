@@ -37,4 +37,33 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ---
 
+## 核心技能 (Core Skills)
+
+### 子代理自适应调度器
+
+**路径:** `skills/subagent-scheduler/`
+**版本:** v1.3.0 (Phase 4)
+
+**使用方式:**
+```javascript
+const { SubagentScheduler } = require('./skills/subagent-scheduler');
+const scheduler = new SubagentScheduler();
+await scheduler.init();
+
+// 执行任务（自动决策是否spawn）
+const result = await scheduler.execute({
+  task: "用户任务描述",
+  chatId: currentChatId
+});
+```
+
+**关键配置:**
+- 每日6:00 自动分析历史数据
+- 每日9:00 推送优化报告
+- 成本上限: 单任务$1, 日$50
+
+**详细文档:** 见 `CORE-SKILL.md`
+
+---
+
 Add whatever helps you do your job. This is your cheat sheet.
