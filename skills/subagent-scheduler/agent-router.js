@@ -65,7 +65,7 @@ class AgentRouter extends EventEmitter {
       
       if (candidates.length === 0) {
         // 没有可用 Agent，尝试降级或失败
-        if (this.fallbackEnabled) {
+        if (this.fallbackEnabled && !options.isFallback) {
           return await this.fallbackRoute(subtask, options);
         }
         throw new Error('没有可用的 Agent 处理该子任务');
@@ -210,7 +210,8 @@ class AgentRouter extends EventEmitter {
       return await this.route(relaxedSubtask, {
         ...options,
         strategy: RoutingStrategy.LOAD_BALANCE,
-        excludeAgents: []
+        excludeAgents: [],
+        isFallback: true  // 标记为降级路由，避免无限递归
       });
     } catch (error) {
       // 2. 如果还失败，使用默认 Agent
