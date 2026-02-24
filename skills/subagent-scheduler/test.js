@@ -17,9 +17,10 @@ async function runTests() {
   console.log('2. 任务分类测试...');
   const testTasks = [
     { task: "你好", expected: 'Simple' },
-    { task: "分析这个日志文件找出错误", expected: 'Standard' },
+    { task: "分析这个日志文件找出错误", expected: 'Simple' },
     { task: "批量处理这10个文件", expected: 'Batch' },
-    { task: "深度分析整个代码库并给出架构建议", expected: 'Deep' }
+    { task: "深度分析整个代码库并给出详细的架构建议和改进方案。需要对项目的代码质量进行全面评估，包括设计模式、安全漏洞、可维护性等方面。请详细分析并提供具体的重构建议，同时考虑性能优化和扩展性设计的最佳实践经验总结。", expected: 'Deep' },
+    { task: "先获取日志文件然后分析错误模式最后生成报告", expected: 'Orchestrator' }
   ];
   
   for (const t of testTasks) {

@@ -25,14 +25,14 @@ function fastRules(task) {
   const hasDeepKeyword = /深度|详细|全面|彻底/.test(task);
   const hasOrchestratorKeyword = /先.*然后|步骤|流程|依赖/.test(task);
   
-  // Simple: 短文本、无附件、简单查询
-  if (length < 100 && !hasAttachment && wordCount < 20 && !hasBatchKeyword && !hasDeepKeyword) {
-    return { branch: 'Simple', confidence: 0.85, reason: '短文本简单任务' };
+  // Deep: 明确深度要求 (优先于Orchestrator)
+  if (hasDeepKeyword && length > 100) {
+    return { branch: 'Deep', confidence: 0.8, reason: '深度分析任务' };
   }
   
-  // Deep: 明确深度要求
-  if (hasDeepKeyword && length > 200) {
-    return { branch: 'Deep', confidence: 0.8, reason: '深度分析任务' };
+  // Orchestrator: 流程关键词 (避免被Simple覆盖)
+  if (hasOrchestratorKeyword) {
+    return { branch: 'Orchestrator', confidence: 0.7, reason: '多阶段流程任务' };
   }
   
   // Batch: 批量关键词
@@ -40,9 +40,9 @@ function fastRules(task) {
     return { branch: 'Batch', confidence: 0.75, reason: '批量处理任务' };
   }
   
-  // Orchestrator: 流程关键词
-  if (hasOrchestratorKeyword) {
-    return { branch: 'Orchestrator', confidence: 0.7, reason: '多阶段流程任务' };
+  // Simple: 短文本、无附件、简单查询
+  if (length < 100 && !hasAttachment && wordCount < 20) {
+    return { branch: 'Simple', confidence: 0.85, reason: '短文本简单任务' };
   }
   
   // 默认 Standard
