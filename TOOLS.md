@@ -39,7 +39,7 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ## 核心技能 (Core Skills)
 
-### 子代理自适应调度器
+### 子代理自适应调度器 ⭐ 主要
 
 **路径:** `skills/subagent-scheduler/`
 **版本:** v1.3.0 (Phase 4)
@@ -63,6 +63,38 @@ const result = await scheduler.execute({
 - 成本上限: 单任务$1, 日$50
 
 **详细文档:** 见 `CORE-SKILL.md`
+
+---
+
+### 视频内容提取器
+
+**路径:** `skills/video-extractor/`
+
+**功能:** 从B站、YouTube等平台提取视频字幕和音频转录
+
+**使用方式:**
+```javascript
+const { extractVideoContent } = require('./skills/video-extractor');
+
+// 提取视频内容
+const result = await extractVideoContent('https://b23.tv/xxx', {
+  languages: ['zh-CN'],      // 字幕语言
+  autoSubtitles: true,       // 允许自动字幕
+  transcribe: true,          // 无字幕时音频转录
+  summarize: true            // 生成摘要
+});
+
+// 结果
+result.info          // 视频信息
+result.subtitles     // 字幕内容
+result.transcript    // 音频转录
+result.summary       // 内容摘要
+```
+
+**依赖:**
+```bash
+pip install yt-dlp openai-whisper
+```
 
 ---
 
