@@ -12,6 +12,10 @@ const { CostMonitor } = require('./cost-monitor');
 const { RetryExecutor } = require('./retry-executor');
 const { StreamingProgress } = require('./streaming-progress');
 const { LLMClassifier } = require('./llm-classifier');
+const { ProbeExecutor } = require('./probe-executor');
+const { LayeredContext } = require('./layered-context');
+const { PolicyManager } = require('./policy-manager');
+const { TracingManager } = require('./tracing-manager');
 const config = require('./config.json');
 
 // 可选模块（需要外部依赖）

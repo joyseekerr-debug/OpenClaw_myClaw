@@ -1,0 +1,79 @@
+{
+  "traceId": "trace_1771902143801_ah6y5v9a5",
+  "taskId": "test-task-001",
+  "startTime": 1771902143801,
+  "status": "completed",
+  "spans": [
+    {
+      "spanId": "span_1_e0nsm",
+      "parentSpanId": null,
+      "name": "analysis",
+      "startTime": 1771902143801,
+      "status": "completed",
+      "tags": {
+        "step": 1
+      },
+      "logs": [],
+      "endTime": 1771902143909,
+      "duration": 108
+    },
+    {
+      "spanId": "span_2_fslal",
+      "parentSpanId": "span_1_e0nsm",
+      "name": "processing",
+      "startTime": 1771902143909,
+      "status": "completed",
+      "tags": {
+        "step": 2
+      },
+      "logs": [],
+      "endTime": 1771902144068,
+      "duration": 159
+    },
+    {
+      "spanId": "span_3_3gjsg",
+      "parentSpanId": null,
+      "name": "tool:read",
+      "startTime": 1771902144068,
+      "status": "completed",
+      "tags": {
+        "tool": "read",
+        "duration": 50,
+        "success": true
+      },
+      "logs": [],
+      "endTime": 1771902144068,
+      "duration": 0
+    },
+    {
+      "spanId": "span_4_umpwt",
+      "parentSpanId": null,
+      "name": "tool:write",
+      "startTime": 1771902144068,
+      "status": "completed",
+      "tags": {
+        "tool": "write",
+        "duration": 30,
+        "success": true
+      },
+      "logs": [],
+      "endTime": 1771902144068,
+      "duration": 0
+    }
+  ],
+  "metadata": {
+    "branch": "Standard",
+    "model": "kimi-coding/k2p5"
+  },
+  "metrics": {
+    "toolCalls": 2,
+    "tokensIn": 1500,
+    "tokensOut": 800,
+    "errors": 0
+  },
+  "endTime": 1771902144068,
+  "duration": 267,
+  "result": {
+    "summary": "测试完成"
+  }
+}

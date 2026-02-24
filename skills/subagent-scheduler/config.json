@@ -1,7 +1,7 @@
 {
   "name": "subagent-scheduler",
-  "version": "1.1.0",
-  "description": "自适应子代理调度系统 - Phase 2增强版",
+  "version": "1.2.0",
+  "description": "自适应子代理调度系统 - Phase 3智能版",
   "model": "kimi-coding/k2p5",
   "reasoning": true,
   
@@ -28,6 +28,29 @@
         "Batch": "Standard",
         "Standard": "Simple"
       }
+    }
+  },
+  
+  "phase3": {
+    "enabled": true,
+    "probeExecutor": {
+      "enabled": true,
+      "probeDuration": 15000,
+      "checkInterval": 3000
+    },
+    "layeredContext": {
+      "enabled": true,
+      "compressionThreshold": 0.8,
+      "maxContextSize": 100000
+    },
+    "policyManager": {
+      "enabled": true
+    },
+    "tracing": {
+      "enabled": true,
+      "sampleRate": 1.0,
+      "includeTools": true,
+      "outputDir": "./traces"
     }
   },
   
