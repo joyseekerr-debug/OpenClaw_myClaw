@@ -16,6 +16,7 @@ const { ProbeExecutor } = require('./probe-executor');
 const { LayeredContext } = require('./layered-context');
 const { PolicyManager } = require('./policy-manager');
 const { TracingManager } = require('./tracing-manager');
+const { LearningEngine } = require('./learning-engine');
 const config = require('./config.json');
 
 // 可选模块（需要外部依赖）
@@ -61,6 +62,12 @@ class SubagentScheduler {
     this.llmClassifier = new LLMClassifier(
       config.phase2?.llmClassifier || {}
     );
+    
+    // Phase 4: 学习引擎
+    this.learningEngine = new LearningEngine(this.db, {
+      outputDir: './learning-reports',
+      minSamples: config.phase4?.learning?.minSamples || 5
+    });
     
     // 初始化并发控制
     this.initConcurrency(options.redis);
@@ -331,6 +338,37 @@ class SubagentScheduler {
    */
   async getConcurrencyStatus() {
     return await this.concurrencyController.getAllStatus();
+  }
+
+  /**
+   * 启动每日学习定时任务
+   * @param {string} chatId - 飞书聊天ID（可选）
+   * @param {string} schedule - cron表达式，默认每天9点
+   */
+  startDailyLearning(chatId = null, schedule = '0 9 * * *') {
+    const feishuSender = chatId ? async (card) => {
+      await feishu.sendMessage(chatId, card);
+    } : null;
+    
+    return this.cronManager.startLearningTask(
+      this.learningEngine,
+      feishuSender,
+      schedule
+    );
+  }
+
+  /**
+   * 手动执行学习（用于测试）
+   */
+  async runLearningNow() {
+    return await this.learningEngine.dailyLearning();
+  }
+
+  /**
+   * 获取最新学习报告
+   */
+  getLatestLearningReport() {
+    return this.learningEngine.getLatestReport();
   }
 
   /**

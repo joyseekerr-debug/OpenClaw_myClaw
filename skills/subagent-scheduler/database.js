@@ -56,7 +56,7 @@ async function query(sql, params = []) {
     
     // 判断是查询还是执行
     if (sql.trim().toLowerCase().startsWith('select')) {
-      return stmt.all(...params);
+      return stmt.all(...params) || [];
     } else {
       return stmt.run(...params);
     }

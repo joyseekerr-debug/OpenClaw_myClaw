@@ -1,13 +1,14 @@
 # Subagent Scheduler Skill
 
-自适应子代理调度系统 - Phase 3智能版
+自适应子代理调度系统 - Phase 4自适应版
 
 ## 版本信息
 
-- **当前版本:** v1.2.0 (Phase 3)
+- **当前版本:** v1.3.0 (Phase 4)
 - **Phase 1:** v1.0.0 - MVP基础功能 ✅
 - **Phase 2:** v1.1.0 - 增强功能 ✅
 - **Phase 3:** v1.2.0 - 智能化功能 ✅
+- **Phase 4:** v1.3.0 - 自适应学习 ✅
 
 ## 功能特性
 
@@ -32,11 +33,12 @@
 - ✅ **策略权限系统** - 分支绑定权限 + 动态申请
 - ✅ **分布式追踪** - 全链路追踪 + 火焰图 + 自动诊断
 
-### Phase 4 (计划中)
-- ⏳ 历史数据学习
-- ⏳ 自动优化建议
-- ⏳ 插件化架构
-- ⏳ 预测性调度
+### Phase 4 (已完成)
+- ✅ **每日定时学习** - 自动分析历史数据，生成优化报告
+- ✅ **分类准确率优化** - 检测误判，建议阈值调整
+- ✅ **耗时分布分析** - 自动校准超时时间
+- ✅ **成本预估校准** - 修正预估模型参数
+- ✅ **飞书报告推送** - 每日9点自动推送优化建议
 
 ## 文件结构
 
@@ -49,6 +51,11 @@ subagent-scheduler/
 ├── llm-classifier.js           # LLM分类层 (Phase 2新增)
 ├── streaming-progress.js       # 流式进度 (Phase 2新增)
 ├── retry-executor.js           # 重试与恢复 (Phase 2增强)
+├── probe-executor.js           # 试探执行 (Phase 3新增)
+├── layered-context.js          # 分层上下文 (Phase 3新增)
+├── policy-manager.js           # 策略权限 (Phase 3新增)
+├── tracing-manager.js          # 分布式追踪 (Phase 3新增)
+├── learning-engine.js          # 学习引擎 (Phase 4新增)
 ├── feishu.js                   # 飞书交互模块
 ├── database.js                 # SQLite操作封装
 ├── cron-manager.js             # 定时任务管理
@@ -59,7 +66,8 @@ subagent-scheduler/
 ├── index.js                    # 主入口 (Phase 3增强)
 ├── test.js                     # 基础测试
 ├── test-phase2.js              # Phase 2测试
-└── test-phase3.js              # Phase 3测试
+├── test-phase3.js              # Phase 3测试
+└── test-phase4.js              # Phase 4测试
 ```
 
 ## 使用方法

@@ -119,6 +119,35 @@ class CronManager extends EventEmitter {
   }
 
   /**
+   * 启动学习引擎定时任务
+   * @param {LearningEngine} learningEngine - 学习引擎实例
+   * @param {Function} feishuSender - 飞书发送函数
+   * @param {string} schedule - cron表达式，默认每天9点
+   */
+  startLearningTask(learningEngine, feishuSender = null, schedule = '0 9 * * *') {
+    const task = cron.schedule(schedule, async () => {
+      console.log('[Cron] 执行每日学习...');
+      try {
+        const report = await learningEngine.dailyLearning();
+        
+        // 如果有飞书发送函数，推送报告
+        if (feishuSender) {
+          const card = learningEngine.buildFeishuCard(report);
+          await feishuSender(card);
+        }
+        
+        console.log('[Cron] 每日学习完成');
+      } catch (error) {
+        console.error('[Cron] 每日学习失败:', error);
+      }
+    }, { scheduled: true, timezone: 'Asia/Shanghai' });
+    
+    this.tasks.set('daily-learning', task);
+    console.log('[Cron] 学习引擎任务已启动，每天9:00执行');
+    return 'daily-learning';
+  }
+
+  /**
    * 获取运行中的任务列表
    */
   list() {
