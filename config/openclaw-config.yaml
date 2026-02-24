@@ -1,0 +1,70 @@
+# OpenClaw Gateway Configuration - Performance Optimized
+# Location: ~/.openclaw/config.yaml
+
+# Gateway general settings
+gateway:
+  # 消息轮询间隔 (毫秒)
+  # 降低此值可以更快响应消息，但会增加CPU使用
+  # 推荐值: 100-1000ms
+  polling_interval: 500
+  
+  # 消息处理超时 (秒)
+  message_timeout: 30
+  
+  # 并发工作线程数
+  worker_threads: 5
+  
+  # 是否启用异步处理
+  async_mode: true
+
+# Feishu (Lark) configuration
+feishu:
+  # Webhook超时
+  webhook_timeout: 5
+  
+  # 消息推送配置
+  message:
+    # 重试次数
+    retry_count: 3
+    # 重试间隔 (秒)
+    retry_interval: 1
+    # 批量发送阈值 (消息数量)
+    batch_threshold: 5
+    # 批量发送间隔 (毫秒)
+    batch_interval: 100
+  
+  # HTTP连接池
+  connection_pool:
+    enabled: true
+    max_connections: 10
+    max_keepalive: 30
+    connection_timeout: 5
+  
+  # 长轮询配置
+  long_polling:
+    enabled: true
+    timeout: 30
+
+# Performance tuning
+performance:
+  # 是否启用消息缓存
+  message_cache: true
+  cache_ttl: 300  # 缓存时间(秒)
+  
+  # 日志级别 (生产环境建议 warning)
+  log_level: info
+  
+  # 内存限制 (MB)
+  memory_limit: 512
+  
+  # GC频率
+  gc_interval: 300
+
+# Monitoring
+monitoring:
+  # 性能指标收集
+  metrics_enabled: true
+  # 报告间隔 (秒)
+  report_interval: 60
+  # 慢请求阈值 (毫秒)
+  slow_request_threshold: 1000
