@@ -10,6 +10,8 @@ const { FeishuCallbackHandler } = require('./feishu-callback');
 const { getCronManager } = require('./cron-manager');
 const { CostMonitor } = require('./cost-monitor');
 const { RetryExecutor } = require('./retry-executor');
+const { StreamingProgress } = require('./streaming-progress');
+const { LLMClassifier } = require('./llm-classifier');
 const config = require('./config.json');
 
 // 可选模块（需要外部依赖）
@@ -30,16 +32,31 @@ try {
 }
 
 /**
- * 子代理调度器类
+ * 子代理调度器类 - Phase 2增强版
  */
 class SubagentScheduler {
   constructor(options = {}) {
     this.db = database;
     this.cronManager = getCronManager();
     this.costMonitor = new CostMonitor(this.db, options.budget);
-    this.retryExecutor = new RetryExecutor(options.retry);
+    this.retryExecutor = new RetryExecutor({
+      ...options.retry,
+      enableDowngrade: config.phase2?.resilience?.enableDowngrade !== false,
+      enableCheckpoint: config.phase2?.resilience?.enableCheckpoint !== false,
+      downgradeChain: config.phase2?.resilience?.downgradeChain
+    });
     this.feishuCallback = new FeishuCallbackHandler(feishu);
     this.concurrencyController = null;
+    
+    // Phase 2: 流式进度
+    this.streamingProgress = new StreamingProgress(
+      config.phase2?.streamingProgress || {}
+    );
+    
+    // Phase 2: LLM分类器
+    this.llmClassifier = new LLMClassifier(
+      config.phase2?.llmClassifier || {}
+    );
     
     // 初始化并发控制
     this.initConcurrency(options.redis);

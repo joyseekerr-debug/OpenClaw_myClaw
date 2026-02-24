@@ -5,6 +5,10 @@
 
 const EventEmitter = require('events');
 
+/**
+ * 重试执行器 - Phase 2增强版
+ * 带指数退避 + 分级失败恢复机制
+ */
 class RetryExecutor extends EventEmitter {
   constructor(options = {}) {
     super();
@@ -14,6 +18,17 @@ class RetryExecutor extends EventEmitter {
     this.retryableErrors = options.retryableErrors || [
       'TIMEOUT', 'NETWORK', 'RATE_LIMIT', 'RESOURCE'
     ];
+    
+    // Phase 2: 分级失败恢复配置
+    this.enableDowngrade = options.enableDowngrade !== false;
+    this.enableCheckpoint = options.enableCheckpoint !== false;
+    this.downgradeChain = options.downgradeChain || {
+      'Deep': 'Standard',
+      'Orchestrator': 'Standard',
+      'Batch': 'Standard',
+      'Standard': 'Simple'
+    };
+    this.checkpoints = new Map();
   }
 
   /**
@@ -179,6 +194,197 @@ class RetryExecutor extends EventEmitter {
       }, { task: config.task, branch: config.branch });
     };
   }
+
+  // ========== Phase 2: 分级失败恢复 ==========
+
+  /**
+   * 分级错误处理
+   * 根据错误类型选择不同的恢复策略
+   */
+  async handleErrorByType(error, errorType, context, fn) {
+    switch (errorType) {
+      case 'TRANSIENT':
+      case 'TIMEOUT':
+      case 'NETWORK':
+        // 瞬时错误：指数退避重试
+        return await this.retryWithBackoff(fn, context);
+        
+      case 'RESOURCE':
+        // 资源错误：降级策略
+        if (this.enableDowngrade && context.branch) {
+          return await this.downgradeAndRetry(fn, context);
+        }
+        break;
+        
+      case 'RATE_LIMIT':
+        // 限流错误：延长退避时间
+        return await this.retryWithBackoff(fn, context, { multiplier: 3.0 });
+        
+      case 'LOGIC':
+      case 'INVALID_INPUT':
+        // 逻辑错误：不重试，直接失败
+        return {
+          success: false,
+          error,
+          errorType,
+          reason: '逻辑错误，无法通过重试恢复'
+        };
+        
+      default:
+        // 未知错误：尝试重试
+        return await this.retryWithBackoff(fn, context);
+    }
+  }
+
+  /**
+   * 策略降级
+   * Deep -> Standard -> Simple
+   */
+  async downgradeAndRetry(fn, context) {
+    const currentBranch = context.branch;
+    const downgradeTo = this.downgradeChain[currentBranch];
+    
+    if (!downgradeTo) {
+      return {
+        success: false,
+        error: new Error(`无法降级分支: ${currentBranch}`),
+        reason: '已到最低策略级别'
+      };
+    }
+    
+    this.emit('downgrade', {
+      from: currentBranch,
+      to: downgradeTo,
+      context
+    });
+    
+    // 更新上下文为降级后的策略
+    const downgradedContext = {
+      ...context,
+      branch: downgradeTo,
+      downgraded: true,
+      originalBranch: currentBranch
+    };
+    
+    try {
+      const result = await fn(downgradedContext);
+      return {
+        success: true,
+        result,
+        downgraded: true,
+        from: currentBranch,
+        to: downgradeTo
+      };
+    } catch (error) {
+      // 降级后仍失败，继续降级
+      if (this.downgradeChain[downgradeTo]) {
+        return await this.downgradeAndRetry(fn, downgradedContext);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * 带退避的重试
+   */
+  async retryWithBackoff(fn, context, options = {}) {
+    const maxRetries = options.maxRetries || this.maxRetries;
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const delay = this.calculateBackoff(attempt, context.lastErrorType) * (options.multiplier || 1);
+        await this.sleep(delay);
+        
+        this.emit('retry', { attempt, delay, context });
+        
+        const result = await fn(context);
+        return { success: true, result, attempts: attempt };
+      } catch (error) {
+        lastError = error;
+        context.lastErrorType = this.classifyError(error);
+        
+        if (attempt === maxRetries) {
+          break;
+        }
+      }
+    }
+    
+    return {
+      success: false,
+      error: lastError,
+      attempts: maxRetries,
+      reason: '重试次数耗尽'
+    };
+  }
+
+  /**
+   * 保存检查点
+   */
+  saveCheckpoint(taskId, data) {
+    this.checkpoints.set(taskId, {
+      timestamp: Date.now(),
+      data,
+      attempt: (this.checkpoints.get(taskId)?.attempt || 0) + 1
+    });
+    this.emit('checkpoint-saved', { taskId, attempt: this.checkpoints.get(taskId).attempt });
+  }
+
+  /**
+   * 加载检查点
+   */
+  loadCheckpoint(taskId) {
+    const checkpoint = this.checkpoints.get(taskId);
+    if (checkpoint) {
+      this.emit('checkpoint-loaded', { taskId, timestamp: checkpoint.timestamp });
+    }
+    return checkpoint;
+  }
+
+  /**
+   * 从检查点恢复执行
+   */
+  async resumeFromCheckpoint(taskId, fn, context) {
+    const checkpoint = this.loadCheckpoint(taskId);
+    
+    if (!checkpoint) {
+      return { success: false, reason: '无检查点可恢复' };
+    }
+    
+    this.emit('resuming', { taskId, checkpoint });
+    
+    try {
+      const result = await fn({
+        ...context,
+        checkpoint: checkpoint.data,
+        resumed: true
+      });
+      
+      // 成功后清理检查点
+      this.checkpoints.delete(taskId);
+      
+      return {
+        success: true,
+        result,
+        resumed: true,
+        attempts: checkpoint.attempt
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error,
+        resumed: true,
+        reason: '从检查点恢复失败'
+      };
+    }
+  }
+
+  /**
+   * 清理检查点
+   */
+  clearCheckpoint(taskId) {
+    this.checkpoints.delete(taskId);
+  }
 }
 
 // 预设配置
@@ -195,7 +401,9 @@ RetryExecutor.PRESETS = {
     maxRetries: 3,
     baseDelay: 2000,
     maxDelay: 60000,
-    retryableErrors: ['TIMEOUT', 'NETWORK', 'RESOURCE']
+    retryableErrors: ['TIMEOUT', 'NETWORK', 'RESOURCE'],
+    enableDowngrade: true,
+    enableCheckpoint: true
   },
   
   // 数据库操作

@@ -1,9 +1,20 @@
 /**
- * 子代理调度器核心模块
+ * 子代理调度器核心模块 - Phase 2增强版
  * 实现任务分类、执行、重试、成本管理
  */
 
 const config = require('./config.json');
+const { LLMClassifier } = require('./llm-classifier');
+
+// Phase 2: LLM分类器实例
+let llmClassifier = null;
+
+function getLLMClassifier() {
+  if (!llmClassifier && config.phase2?.llmClassifier?.enabled !== false) {
+    llmClassifier = new LLMClassifier(config.phase2?.llmClassifier || {});
+  }
+  return llmClassifier;
+}
 
 /**
  * 计算任务特征哈希（用于历史查询）
@@ -50,39 +61,70 @@ function fastRules(task) {
 }
 
 /**
- * 任务分类主函数
+ * 任务分类主函数 - Phase 2三层决策器
  */
-async function classifyTask(task, db = null) {
-  // 1. 快速规则
-  const result = fastRules(task);
+async function classifyTask(task, db = null, options = {}) {
+  // ========== 第一层：快速规则 ==========
+  const fastResult = fastRules(task);
   
-  if (result.confidence >= 0.6) {
-    return result;
+  // 高置信度直接返回
+  if (fastResult.confidence >= 0.75) {
+    return { ...fastResult, layer: 'rules' };
   }
   
-  // 2. 如果有数据库，查询历史
+  // ========== 第二层：历史数据校准 ==========
   if (db) {
-    const similar = await db.query(
-      `SELECT branch, AVG(duration_ms) as avg_duration, COUNT(*) as count
-       FROM task_history 
-       WHERE task_hash LIKE ? AND success = 1
-       GROUP BY branch 
-       ORDER BY count DESC 
-       LIMIT 1`,
-      [hashTask(task).substring(0, 20) + '%']
-    );
-    
-    if (similar && similar.count >= 3) {
-      return {
-        branch: similar.branch,
-        confidence: 0.7,
-        reason: `基于${similar.count}次相似任务历史`,
-        estimatedDuration: similar.avg_duration
-      };
+    try {
+      const similar = await db.query(
+        `SELECT branch, AVG(duration_ms) as avg_duration, COUNT(*) as count,
+                SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) as success_rate
+         FROM task_history 
+         WHERE task_hash LIKE ? AND created_at > datetime('now', '-7 days')
+         GROUP BY branch 
+         ORDER BY count DESC 
+         LIMIT 1`,
+        [hashTask(task).substring(0, 20) + '%']
+      );
+      
+      if (similar && similar.count >= 2 && similar.success_rate >= 70) {
+        return {
+          branch: similar.branch,
+          confidence: Math.min(0.75, 0.6 + similar.count * 0.05),
+          reason: `基于${similar.count}次相似任务(成功率${similar.success_rate.toFixed(0)}%)`,
+          estimatedDuration: similar.avg_duration,
+          layer: 'history'
+        };
+      }
+    } catch (e) {
+      console.error('[classifyTask] 历史查询失败:', e.message);
     }
   }
   
-  return result;
+  // 中等置信度返回
+  if (fastResult.confidence >= 0.6) {
+    return { ...fastResult, layer: 'rules' };
+  }
+  
+  // ========== 第三层：LLM分类 ==========
+  if (options.useLLM !== false && config.phase2?.llmClassifier?.enabled !== false) {
+    try {
+      const classifier = getLLMClassifier();
+      const llmResult = await classifier.classify(task, options.callLLM);
+      
+      if (llmResult && llmResult.confidence >= (options.llmThreshold || 0.7)) {
+        return {
+          ...llmResult,
+          layer: 'llm',
+          fallback: fastResult
+        };
+      }
+    } catch (e) {
+      console.error('[classifyTask] LLM分类失败:', e.message);
+    }
+  }
+  
+  // 降级到规则结果
+  return { ...fastResult, layer: 'rules-fallback' };
 }
 
 /**

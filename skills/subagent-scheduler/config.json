@@ -1,9 +1,36 @@
 {
   "name": "subagent-scheduler",
-  "version": "1.0.0",
-  "description": "自适应子代理调度系统",
+  "version": "1.1.0",
+  "description": "自适应子代理调度系统 - Phase 2增强版",
   "model": "kimi-coding/k2p5",
   "reasoning": true,
+  
+  "phase2": {
+    "enabled": true,
+    "llmClassifier": {
+      "enabled": true,
+      "model": "openai/gpt-4.1-mini",
+      "confidenceThreshold": 0.75,
+      "maxTokens": 150,
+      "temperature": 0.1
+    },
+    "streamingProgress": {
+      "enabled": true,
+      "updateInterval": 10,
+      "minUpdateDelta": 5
+    },
+    "resilience": {
+      "enableDowngrade": true,
+      "enableCheckpoint": true,
+      "downgradeChain": {
+        "Deep": "Standard",
+        "Orchestrator": "Standard",
+        "Batch": "Standard",
+        "Standard": "Simple"
+      }
+    }
+  },
+  
   "costLimits": {
     "perTask": 1.0,
     "perSession": 10.0,
