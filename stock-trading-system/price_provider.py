@@ -63,24 +63,39 @@ class StockPriceProvider:
             if response.status_code == 200:
                 data = response.text
                 
-                # 解析新浪返回格式: var hq_str_rt_hk01810="..."
+                # Parse Sina HK format
                 match = re.search(r'\"([^\"]+)\"', data)
                 if match:
                     fields = match.group(1).split(',')
                     
                     if len(fields) >= 10:
+                        # Sina HK stock data format (verified with screenshot):
+                        # [0] English name
+                        # [1] Chinese name
+                        # [2] Open price
+                        # [3] Previous close (昨收)
+                        # [4] High? - need to verify
+                        # [5] Low price
+                        # [6] Close price / Latest (收盘价/最新价)
+                        # [7] Change amount (涨跌额)
+                        # [8] Change percent (涨跌幅%)
+                        # [9] Bid price
+                        # [10] Ask price
+                        
                         return {
                             'source': 'sina_realtime',
                             'symbol': self.symbol,
                             'name': fields[0],
-                            'price': float(fields[3]),
-                            'open': float(fields[2]),
-                            'high': float(fields[5]),
-                            'low': float(fields[6]),
-                            'prev_close': float(fields[4]),
+                            'price': float(fields[6]),      # Close/Latest price
+                            'open': float(fields[2]),       # Open
+                            'high': float(fields[4]),       # High
+                            'low': float(fields[5]),        # Low
+                            'prev_close': float(fields[3]), # Previous close
                             'volume': int(fields[12]) if len(fields) > 12 else 0,
-                            'change': float(fields[8]),
-                            'change_pct': float(fields[9]),
+                            'change': float(fields[7]),     # Change amount
+                            'change_pct': float(fields[8]), # Change percent
+                            'bid': float(fields[9]) if len(fields) > 9 else 0,
+                            'ask': float(fields[10]) if len(fields) > 10 else 0,
                             'timestamp': datetime.now().isoformat(),
                             'market_time': fields[18] if len(fields) > 18 else ''
                         }
