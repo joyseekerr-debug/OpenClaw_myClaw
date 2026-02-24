@@ -1,13 +1,17 @@
 """
-股票价格获取模块 - 多方案实现
-方案1: 网络API (需要代理配置)
-方案2: 本地模拟 (当前使用)
-方案3: 文件/数据库读取
+股票价格获取模块 - 支持实时数据
+数据源优先级:
+1. 新浪财经API (当前使用)
+2. AKShare (备用)
+3. Yahoo Finance (备用)
+4. 本地模拟 (仅测试)
 """
 
 import random
 import time
-from datetime import datetime, timedelta
+import re
+import requests
+from datetime import datetime
 from typing import Dict, Optional
 import json
 import os
@@ -18,11 +22,12 @@ class StockPriceProvider:
     
     def __init__(self, symbol: str = '1810.HK'):
         self.symbol = symbol
+        self.sina_code = 'rt_hk' + symbol.replace('.HK', '')
         self.base_price = 15.0
         self.current_price = self.base_price
         self.price_history = []
         
-        # 加载历史数据（如果有）
+        # 加载历史数据
         self._load_history()
     
     def _load_history(self):
@@ -39,18 +44,59 @@ class StockPriceProvider:
         os.makedirs('data', exist_ok=True)
         history_file = f'data/{self.symbol.replace(".", "_")}_history.json'
         with open(history_file, 'w') as f:
-            json.dump(self.price_history[-1000:], f)  # 只保留最近1000条
+            json.dump(self.price_history[-1000:], f)
     
-    def get_real_time_price_network(self) -> Optional[Dict]:
+    def get_sina_price(self) -> Optional[Dict]:
         """
-        从网络获取实时股价
-        注: 需要配置代理或网络环境
+        从新浪财经获取实时股价
+        来源: https://hq.sinajs.cn/
         """
-        # 方案1: AKShare
+        try:
+            url = f'https://hq.sinajs.cn/list={self.sina_code}'
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Referer': 'https://finance.sina.com.cn'
+            }
+            
+            response = requests.get(url, headers=headers, timeout=15)
+            
+            if response.status_code == 200:
+                data = response.text
+                
+                # 解析新浪返回格式: var hq_str_rt_hk01810="..."
+                match = re.search(r'\"([^\"]+)\"', data)
+                if match:
+                    fields = match.group(1).split(',')
+                    
+                    if len(fields) >= 10:
+                        return {
+                            'source': 'sina_realtime',
+                            'symbol': self.symbol,
+                            'name': fields[0],
+                            'price': float(fields[3]),
+                            'open': float(fields[2]),
+                            'high': float(fields[5]),
+                            'low': float(fields[6]),
+                            'prev_close': float(fields[4]),
+                            'volume': int(fields[12]) if len(fields) > 12 else 0,
+                            'change': float(fields[8]),
+                            'change_pct': float(fields[9]),
+                            'timestamp': datetime.now().isoformat(),
+                            'market_time': fields[18] if len(fields) > 18 else ''
+                        }
+                        
+        except Exception as e:
+            print(f"Sina API error: {e}")
+        
+        return None
+    
+    def get_akshare_price(self) -> Optional[Dict]:
+        """从AKShare获取股价"""
         try:
             import akshare as ak
             hk_df = ak.stock_hk_spot_em()
             xiaomi = hk_df[hk_df['代码'] == '01810']
+            
             if not xiaomi.empty:
                 row = xiaomi.iloc[0]
                 return {
@@ -66,18 +112,21 @@ class StockPriceProvider:
                     'timestamp': datetime.now().isoformat()
                 }
         except Exception as e:
-            print(f"AKShare获取失败: {e}")
+            print(f"AKShare error: {e}")
         
-        # 方案2: Yahoo Finance
+        return None
+    
+    def get_yahoo_price(self) -> Optional[Dict]:
+        """从Yahoo Finance获取股价"""
         try:
             import yfinance as yf
             ticker = yf.Ticker(self.symbol)
             hist = ticker.history(period='1d', interval='1m')
+            
             if not hist.empty:
                 latest = hist.iloc[-1]
                 info = ticker.info
                 prev_close = info.get('previousClose', latest['Close'])
-                change_pct = (latest['Close'] - prev_close) / prev_close * 100
                 
                 return {
                     'source': 'yahoo',
@@ -88,11 +137,11 @@ class StockPriceProvider:
                     'low': float(latest['Low']),
                     'prev_close': float(prev_close),
                     'volume': int(latest['Volume']),
-                    'change_pct': change_pct,
+                    'change_pct': (latest['Close'] - prev_close) / prev_close * 100,
                     'timestamp': datetime.now().isoformat()
                 }
         except Exception as e:
-            print(f"Yahoo获取失败: {e}")
+            print(f"Yahoo error: {e}")
         
         return None
     
@@ -100,19 +149,15 @@ class StockPriceProvider:
         """
         获取模拟股价（仅用于测试和调试！）
         
-        ⚠️ 警告: 模拟数据不能用于实际交易决策！
-        ⚠️ 生产环境必须使用真实数据源！
+        WARNING: SIMULATED DATA - FOR TESTING ONLY
+        DO NOT USE FOR TRADING DECISIONS
         """
-        # 模拟价格变动
-        change = random.gauss(0, 0.005)  # 正态分布，标准差0.5%
+        change = random.gauss(0, 0.005)
         self.current_price *= (1 + change)
         
-        # 计算今日数据
         open_price = self.current_price * (1 + random.gauss(0, 0.002))
         high_price = max(self.current_price, open_price) * (1 + abs(random.gauss(0, 0.01)))
         low_price = min(self.current_price, open_price) * (1 - abs(random.gauss(0, 0.01)))
-        
-        # 计算涨跌幅
         prev_close = self.base_price
         change_pct = (self.current_price - prev_close) / prev_close * 100
         
@@ -130,113 +175,68 @@ class StockPriceProvider:
             'timestamp': datetime.now().isoformat()
         }
         
-        # 保存历史
         self.price_history.append(data)
-        if len(self.price_history) % 10 == 0:  # 每10条保存一次
+        if len(self.price_history) % 10 == 0:
             self._save_history()
         
         return data
     
     def get_price(self, use_network: bool = True) -> Dict:
-        """
-        获取股价（自动选择方案）
-        
-        Args:
-            use_network: 是否尝试网络获取
-        
-        Returns:
-            股价数据字典
-        """
+        """获取股价（自动选择最佳方案）"""
         if use_network:
-            # 先尝试网络获取
-            network_data = self.get_real_time_price_network()
-            if network_data:
-                return network_data
-            print("⚠️  网络获取失败，切换到模拟数据（仅用于测试）")
+            # 尝试顺序: Sina -> AKShare -> Yahoo
+            for method_name, method in [
+                ('Sina', self.get_sina_price),
+                ('AKShare', self.get_akshare_price),
+                ('Yahoo', self.get_yahoo_price)
+            ]:
+                try:
+                    result = method()
+                    if result:
+                        return result
+                except Exception as e:
+                    print(f"{method_name} failed: {e}")
+                    continue
+            
+            print("All network sources failed, using simulated data")
         else:
-            print("⚠️  使用模拟数据（仅用于测试，不可用于交易）")
+            print("Network disabled, using simulated data (FOR TESTING ONLY)")
         
-        # 使用模拟数据（仅用于测试）
         return self.get_simulated_price()
-    
-    def start_realtime_feed(self, callback=None, interval: int = 5):
-        """
-        启动实时价格推送
-        
-        Args:
-            callback: 价格更新回调函数
-            interval: 更新间隔（秒）
-        """
-        print(f"🚀 启动实时价格推送: {self.symbol}")
-        print(f"   更新间隔: {interval}秒")
-        print(f"   按 Ctrl+C 停止\n")
-        
-        try:
-            while True:
-                price_data = self.get_price(use_network=False)
-                
-                if callback:
-                    callback(price_data)
-                else:
-                    self._print_price(price_data)
-                
-                time.sleep(interval)
-                
-        except KeyboardInterrupt:
-            print("\n⏹️ 实时推送已停止")
-            self._save_history()
-    
-    def _print_price(self, data: Dict):
-        """打印价格信息"""
-        timestamp = datetime.fromisoformat(data['timestamp']).strftime('%H:%M:%S')
-        symbol = data['symbol']
-        price = data['price']
-        change_pct = data['change_pct']
-        
-        arrow = "📈" if change_pct >= 0 else "📉"
-        sign = "+" if change_pct >= 0 else ""
-        
-        print(f"[{timestamp}] {arrow} {symbol}: ¥{price:.3f} ({sign}{change_pct:.2f}%)")
 
 
 # 全局实例
 _price_provider = None
 
 def get_price_provider(symbol: str = '1810.HK') -> StockPriceProvider:
-    """获取价格提供者实例"""
     global _price_provider
     if _price_provider is None or _price_provider.symbol != symbol:
         _price_provider = StockPriceProvider(symbol)
     return _price_provider
 
 
-# 使用示例
 if __name__ == "__main__":
     print("="*60)
-    print("股票价格获取模块")
+    print("Stock Price Fetcher - Xiaomi (1810.HK)")
     print("="*60)
     print()
     
-    # 创建价格提供者
     provider = StockPriceProvider('1810.HK')
+    price = provider.get_price(use_network=True)
     
-    # 获取单次价格
-    print("[单次获取]")
-    price_data = provider.get_price(use_network=False)
+    print(f"\nSymbol: {price['symbol']}")
+    print(f"Source: {price['source']}")
+    print(f"Price: HK$ {price['price']:.3f}")
     
-    print(f"\n股票: {price_data['symbol']}")
-    print(f"来源: {price_data['source']}")
-    print(f"最新价: ¥{price_data['price']:.3f} 港元")
-    print(f"涨跌幅: {price_data['change_pct']:+.2f}%")
-    print(f"今日最高: ¥{price_data['high']:.3f} 港元")
-    print(f"今日最低: ¥{price_data['low']:.3f} 港元")
-    print(f"成交量: {price_data['volume']:,} 股")
-    print()
-    
-    # 启动实时推送（可选）
-    choice = input("是否启动实时价格推送? (y/n): ").lower()
-    if choice == 'y':
-        print()
-        provider.start_realtime_feed(interval=2)
+    if price['source'] == 'simulated':
+        print(f"\n⚠️  WARNING: {price.get('warning', 'SIMULATED DATA')}")
     else:
-        print("\n👋 退出")
+        print(f"Open: HK$ {price['open']:.3f}")
+        print(f"High: HK$ {price['high']:.3f}")
+        print(f"Low: HK$ {price['low']:.3f}")
+        print(f"Change: {price.get('change_pct', 0):+.2f}%")
+        if 'market_time' in price:
+            print(f"Market Time: {price['market_time']}")
+    
+    print(f"\nTimestamp: {price['timestamp']}")
+    print("="*60)
