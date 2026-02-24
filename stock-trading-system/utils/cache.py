@@ -41,12 +41,23 @@ class RedisCache:
             )
             self.client.ping()
             self.is_connected = True
-            logger.info(f"✅ Redis连接成功 {self.host}:{self.port}")
+            logger.info(f"Redis connected {self.host}:{self.port}")
         except ImportError:
-            logger.warning("⚠️ redis库未安装，使用本地内存缓存")
-            self._init_local_cache()
+            logger.warning("redis library not installed, trying fakeredis")
+            self._init_fakeredis()
         except Exception as e:
-            logger.error(f"❌ Redis连接失败: {e}，使用本地内存缓存")
+            logger.error(f"Redis connection failed: {e}, trying fakeredis")
+            self._init_fakeredis()
+    
+    def _init_fakeredis(self):
+        """初始化fakeredis（纯Python Redis实现）"""
+        try:
+            from fakeredis import FakeRedis
+            self.client = FakeRedis()
+            self.is_connected = True
+            logger.info("Using fakeredis (in-memory Redis)")
+        except ImportError:
+            logger.warning("fakeredis not available, using local dict cache")
             self._init_local_cache()
     
     def _init_local_cache(self):
