@@ -1,7 +1,7 @@
 {
   "name": "subagent-scheduler",
-  "version": "1.3.0",
-  "description": "自适应子代理调度系统 - Phase 4自适应版",
+  "version": "1.5.0",
+  "description": "自适应子代理调度系统 - v1.5.0 全功能版",
   "model": "kimi-coding/k2p5",
   "reasoning": true,
   
@@ -58,11 +58,32 @@
     "enabled": true,
     "learning": {
       "enabled": true,
+      "autoStart": true,
       "analysisSchedule": "0 6 * * *",
       "reportSchedule": "0 9 * * *",
       "minSamples": 5,
       "adjustmentThreshold": 0.1,
       "outputDir": "./learning-reports"
+    }
+  },
+
+  "phase5": {
+    "enabled": true,
+    "collaborationHub": {
+      "enabled": true
+    },
+    "executionMonitor": {
+      "enabled": true
+    },
+    "autoRouter": {
+      "enabled": true,
+      "confirmThreshold": "medium",
+      "integrateWithQueue": true
+    },
+    "multiAgent": {
+      "enabled": true,
+      "autoTrigger": true,
+      "complexityThreshold": 70
     }
   },
   
@@ -126,6 +147,6 @@
   "feishu": {
     "enabled": true,
     "appId": "cli_a901df1f0cb8dbdf",
-    "defaultChatId": null
+    "defaultChatId": "ou_93bf97d26531d833b062d99f3963c3d9"
   }
 }

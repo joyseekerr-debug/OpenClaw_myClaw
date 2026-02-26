@@ -1,5 +1,41 @@
 # MEMORY.md - 长期记忆
 
+## 系统配置
+
+### 指令队列 (Command Queue)
+**状态:** ✅ 已启用，自动启动
+**配置:** `skills/subagent-scheduler/queue-config.json`
+
+**功能:**
+- 飞书消息自动排队执行
+- 单线程顺序处理，避免冲突
+- 高优先级关键词插队
+- 自动通知队列状态
+
+**使用方式:**
+```javascript
+const { getMessageHandler } = require('./skills/subagent-scheduler');
+const handler = getMessageHandler();
+
+// 处理消息（自动排队）
+await handler.handleMessage(message, chatId, userInfo);
+```
+
+### 每日学习定时任务
+**状态:** ✅ 已启用，自动启动（每天6:00分析，9:00推送）
+**配置:** `config.json` - `phase4.learning.autoStart: true`
+
+### 自动路由 (Auto Router)
+**状态:** ✅ 已启用
+**配置:** `config.json` - `phase5.autoRouter.enabled: true`
+- 任务复杂度自动检测
+- 复杂任务自动触发用户确认
+
+### 多Agent协作
+**状态:** ✅ 已启用
+**配置:** `config.json` - `phase5.multiAgent.autoTrigger: true`
+- 复杂度≥70分自动启用多Agent模式
+
 ## 工作流程约定
 
 ### 知识积累流程

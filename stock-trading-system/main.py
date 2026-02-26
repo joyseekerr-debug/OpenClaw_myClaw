@@ -108,20 +108,27 @@ class StockTradingSystem:
             raise
     
     def test_realtime_price(self):
-        """测试实时价格获取"""
-        logger.info("💰 测试实时价格获取...")
+        """测试实时价格获取 - 使用真实数据源"""
+        logger.info("Testing realtime price fetch with REAL data sources...")
         
         try:
             provider = get_price_provider(TARGET_STOCK['symbol'])
-            price_data = provider.get_price(use_network=False)
+            # 强制使用真实网络数据，禁止模拟数据
+            price_data = provider.get_price(use_network=True, allow_simulated=False)
             
-            logger.info(f"✅ 价格获取成功!")
-            logger.info(f"   股票: {price_data['symbol']}")
-            logger.info(f"   价格: HK$ {price_data['price']:.3f}")
-            logger.info(f"   涨跌: {price_data['change_pct']:+.2f}%")
+            logger.info(f"SUCCESS: Price fetched from {price_data['source']}")
+            logger.info(f"   Symbol: {price_data['symbol']}")
+            logger.info(f"   Price: HK$ {price_data['price']:.3f}")
+            logger.info(f"   Change: {price_data['change_pct']:+.2f}%")
+            
+            # 验证数据来源
+            if price_data.get('source') == 'simulated':
+                logger.error("CRITICAL: Got simulated data when real data was required!")
+                raise Exception("Simulated data is not allowed for production use")
             
         except Exception as e:
-            logger.error(f"❌ 价格获取失败: {e}")
+            logger.error(f"Price fetch failed: {e}")
+            logger.error("Real-time price is unavailable. Check data sources and network.")
     
     def shutdown(self):
         """关闭系统"""

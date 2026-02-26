@@ -3,6 +3,7 @@
  * 整合所有模块：SQLite、Redis、Cron、成本监控、重试机制
  */
 
+const EventEmitter = require('events');
 const scheduler = require('./scheduler');
 const database = require('./database');
 const feishu = require('./feishu');
@@ -21,6 +22,8 @@ const { AgentRegistry } = require('./agent-registry');
 const { TaskDecomposer } = require('./task-decomposer');
 const { AgentRouter, RoutingStrategy } = require('./agent-router');
 const { ResultAggregator, AggregationStrategy } = require('./result-aggregator');
+const { CollaborationHub } = require('./collaboration-hub');
+const { ExecutionMonitor } = require('./execution-monitor');
 const config = require('./config.json');
 
 // 可选模块（需要外部依赖）
@@ -43,8 +46,10 @@ try {
 /**
  * 子代理调度器类 - Phase 2增强版
  */
-class SubagentScheduler {
+class SubagentScheduler extends EventEmitter {
   constructor(options = {}) {
+    super(); // 初始化EventEmitter
+    
     this.db = database;
     this.cronManager = getCronManager();
     this.costMonitor = new CostMonitor(this.db, options.budget);
@@ -79,11 +84,18 @@ class SubagentScheduler {
     this.agentRouter = new AgentRouter(this.agentRegistry, options.agentRouter || {});
     this.resultAggregator = new ResultAggregator(options.resultAggregator || {});
     
-    // 创建默认本地 agents
+    // Multi-Agent: 协作中心和执行监控
+    this.collaborationHub = new CollaborationHub(options.collaborationHub || {});
+    this.executionMonitor = new ExecutionMonitor(options.executionMonitor || {});
+    
+    // 设置默认本地 agents
     this.setupDefaultAgents();
     
     // 初始化并发控制
     this.initConcurrency(options.redis);
+    
+    // 设置事件监听
+    this.setupEventListeners();
   }
 
   /**
@@ -108,10 +120,23 @@ class SubagentScheduler {
 
   /**
    * 初始化
+   * @param {Object} options - 初始化选项
+   * @param {string} options.chatId - 飞书聊天ID（用于推送报告）
+   * @param {boolean} options.autoStartLearning - 是否自动启动学习定时任务
    */
-  async init() {
+  async init(options = {}) {
     this.db.initDatabase();
     console.log('[Scheduler] 初始化完成');
+    
+    // 自动启动定时任务（如果配置了chatId或明确设置autoStartLearning）
+    if (options.chatId || options.autoStartLearning) {
+      const chatId = options.chatId || config.feishu?.defaultChatId;
+      if (chatId) {
+        console.log('[Scheduler] 自动启动每日学习定时任务...');
+        this.startDailyLearning(chatId);
+      }
+    }
+    
     return this;
   }
 
@@ -606,6 +631,66 @@ class SubagentScheduler {
   }
 
   /**
+   * 设置事件监听器
+   * 连接协作中心和执行监控
+   */
+  setupEventListeners() {
+    // 监听Agent注册，同步到协作中心
+    this.agentRegistry.on('agent-registered', ({ agentId, agentInfo }) => {
+      this.collaborationHub.registerAgent(agentId, agentInfo);
+      this.executionMonitor.registerAgent(agentId, agentInfo);
+    });
+    
+    // 监听Agent注销
+    this.agentRegistry.on('agent-unregistered', ({ agentId }) => {
+      this.collaborationHub.unregisterAgent(agentId);
+    });
+    
+    // 监听任务事件，同步到执行监控
+    this.on('task-started', ({ taskId, agentId }) => {
+      this.executionMonitor.startTask(taskId);
+      if (agentId) {
+        this.executionMonitor.updateAgentLoad(agentId, 1);
+      }
+    });
+    
+    this.on('task-completed', ({ taskId, agentId }) => {
+      this.executionMonitor.completeTask(taskId);
+    });
+    
+    this.on('task-failed', ({ taskId, error, agentId }) => {
+      this.executionMonitor.failTask(taskId, error);
+    });
+    
+    // 监听进度更新
+    this.on('progress-updated', ({ taskId, progress }) => {
+      this.executionMonitor.updateProgress(taskId, progress);
+      this.collaborationHub.reportProgress('system', taskId, progress);
+    });
+  }
+
+  /**
+   * 获取协作中心实例
+   */
+  getCollaborationHub() {
+    return this.collaborationHub;
+  }
+
+  /**
+   * 获取执行监控实例
+   */
+  getExecutionMonitor() {
+    return this.executionMonitor;
+  }
+
+  /**
+   * 获取监控仪表板数据
+   */
+  getDashboard() {
+    return this.executionMonitor.getDashboard();
+  }
+
+  /**
    * 手动发送学习报告
    * @param {string} chatId - 飞书聊天ID
    * @param {string} date - 报告日期，null表示最新
@@ -636,9 +721,20 @@ class SubagentScheduler {
    */
   async close() {
     this.cronManager.stopAll();
+    
     if (this.concurrencyController) {
       await this.concurrencyController.close();
     }
+    
+    if (this.collaborationHub) {
+      this.collaborationHub.close();
+    }
+    
+    if (this.executionMonitor) {
+      this.executionMonitor.close();
+    }
+    
+    this.removeAllListeners();
   }
 }
 
@@ -670,6 +766,20 @@ module.exports = {
   RoutingStrategy,
   ResultAggregator,
   AggregationStrategy,
+  // 新增模块
+  CollaborationHub,
+  ExecutionMonitor,
+  // 自动路由模块
+  AutoRouter: require('./auto-router').AutoRouter,
+  TaskComplexityAnalyzer: require('./auto-router').TaskComplexityAnalyzer,
+  createAutoRouter: require('./auto-router').createAutoRouter,
+  // 指令队列模块
+  CommandQueue: require('./command-queue').CommandQueue,
+  TaskStatus: require('./command-queue').TaskStatus,
+  createFeishuCommandQueue: require('./feishu-queue').createFeishuCommandQueue,
+  // 飞书消息处理器
+  createFeishuMessageHandler: require('./feishu-message-handler').createFeishuMessageHandler,
+  getMessageHandler: require('./feishu-message-handler').getMessageHandler,
   // 子模块
   scheduler,
   database,

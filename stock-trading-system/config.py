@@ -19,23 +19,26 @@ SYSTEM_CONFIG = {
 DATA_SOURCES = {
     'itick': {
         'enabled': True,
-        'api_key': os.getenv('ITICK_API_KEY', ''),
-        'base_url': 'https://api.itick.com',
-        'rate_limit': 1000,  # 每分钟请求数
-        'priority': 1  # 优先级
+        'api_key': os.getenv('ITICK_API_KEY', '62842c85df6f4665a50620efb853102e609ce22b65a34a41a0a9d3af2685caf1'),
+        'base_url': 'https://api-free.itick.org/stock',  # 正确的API地址
+        'rate_limit': 1000,
+        'priority': 1
+    },
+    'sina': {
+        'enabled': True,  # 新浪财经作为备选
+        'priority': 2
     },
     'yahoo': {
         'enabled': True,
-        'priority': 2
+        'priority': 3
     },
     'akshare': {
         'enabled': True,
-        'priority': 3
-    },
-    'alpha_vantage': {
-        'enabled': False,  # 需要API key
-        'api_key': os.getenv('ALPHA_VANTAGE_KEY', ''),
         'priority': 4
+    },
+    'simulated': {
+        'enabled': False,  # 严格禁用模拟数据！
+        'warning': 'SIMULATED DATA - FOR TESTING ONLY'
     }
 }
 

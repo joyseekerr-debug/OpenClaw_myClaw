@@ -1,17 +1,14 @@
 # USER.md - About Your Human
 
-_Learn about the person you're helping. Update this as you go._
-
-- **Name:**
-- **What to call them:**
-- **Pronouns:** _(optional)_
-- **Timezone:**
-- **Notes:**
+**Name:** 于志礼
+**What to call them:** 于志礼
+**Pronouns:** 
+**Timezone:** Asia/Shanghai
+**Notes:** 
 
 ## Context
 
-_(What do they care about? What projects are they working on? What annoys them? What makes them laugh? Build this over time.)_
+- **语言偏好:** 中文交流
+- **人设共创者:** 参与定义了 NEXUS 的身份（诚实度100%，幽默度10%的TARS风格）
 
----
-
-The more you know, the better you can help. But remember — you're learning about a person, not building a dossier. Respect the difference.
+_(持续学习中)_

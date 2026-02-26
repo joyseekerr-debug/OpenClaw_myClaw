@@ -4,11 +4,13 @@
 
 ## 版本信息
 
-- **当前版本:** v1.3.0 (Phase 4)
+- **版本:** v1.5.0 (全功能自动版)
 - **Phase 1:** v1.0.0 - MVP基础功能 ✅
 - **Phase 2:** v1.1.0 - 增强功能 ✅
 - **Phase 3:** v1.2.0 - 智能化功能 ✅
-- **Phase 4:** v1.3.0 - 自适应学习 ✅
+- **Phase 4:** v1.3.0 - 自适应学习 ✅ (自动启动)
+- **Phase 5:** v1.4.0 - 多Agent协作 ✅ (全部自动启用)
+- **v1.5.0:** 全功能自动启用版
 
 ## 功能特性
 
@@ -40,6 +42,15 @@
 - ✅ **成本预估校准** - 修正预估模型参数
 - ✅ **飞书报告推送** - 每日9点自动推送优化建议
 
+### Phase 5 (已完成) - 多Agent协作 + 自动路由 + 指令队列
+- ✅ **协作中心 (Collaboration Hub)** - Agent间通信、状态共享、进度同步
+- ✅ **执行监控 (Execution Monitor)** - 实时监控、性能指标、故障检测与恢复
+- ✅ **Agent注册中心** - Agent发现、健康检查、负载均衡
+- ✅ **任务分解器** - 复杂任务自动分解为DAG
+- ✅ **结果聚合器** - 多结果智能合并、冲突检测
+- ✅ **自动路由 (Auto Router)** - 任务复杂度自动检测，触发用户确认
+- ✅ **指令队列 (Command Queue)** - 飞书消息排队执行，支持优先级
+
 ## 文件结构
 
 ```
@@ -56,6 +67,15 @@ subagent-scheduler/
 ├── policy-manager.js           # 策略权限 (Phase 3新增)
 ├── tracing-manager.js          # 分布式追踪 (Phase 3新增)
 ├── learning-engine.js          # 学习引擎 (Phase 4新增)
+├── auto-router.js             # 自动路由 - 任务复杂度检测
+├── command-queue.js           # 指令队列 - 任务排队执行
+├── feishu-queue.js            # 飞书队列集成
+├── collaboration-hub.js        # 协作中心 (Phase 5新增)
+├── execution-monitor.js        # 执行监控 (Phase 5新增)
+├── agent-registry.js           # Agent注册中心
+├── task-decomposer.js          # 任务分解器
+├── agent-router.js             # Agent路由
+├── result-aggregator.js        # 结果聚合器
 ├── feishu.js                   # 飞书交互模块
 ├── database.js                 # SQLite操作封装
 ├── cron-manager.js             # 定时任务管理
@@ -63,11 +83,14 @@ subagent-scheduler/
 ├── redis-concurrency.js        # 并发控制
 ├── subagent-adapter.js         # 适配器模式
 ├── feishu-callback.js          # 回调处理
-├── index.js                    # 主入口 (Phase 3增强)
+├── index.js                    # 主入口 (Phase 5增强)
 ├── test.js                     # 基础测试
 ├── test-phase2.js              # Phase 2测试
 ├── test-phase3.js              # Phase 3测试
-└── test-phase4.js              # Phase 4测试
+├── test-phase4.js              # Phase 4测试
+├── test-collaboration.js       # Phase 5协作测试
+├── test-auto-router.js         # 自动路由测试
+└── test-command-queue.js       # 指令队列测试
 ```
 
 ## 使用方法
@@ -174,20 +197,170 @@ Standard → Simple
 }
 ```
 
-## 测试
+## 多Agents协作 (Phase 5)
 
-```bash
-# Phase 1基础测试
-node test.js
+### 协作中心 (Collaboration Hub)
 
-# Phase 2增强测试
-node test-phase2.js
+```javascript
+const scheduler = new SubagentScheduler();
+await scheduler.init();
 
-# 全量测试
-node validate-phase1.js
+const hub = scheduler.getCollaborationHub();
+
+// 注册Agent
+hub.registerAgent('Analyzer-1', {
+  name: '代码分析器',
+  capabilities: ['analyze', 'read']
+});
+
+// 设置全局状态
+hub.setGlobal('projectConfig', { name: 'MyProject' });
+
+// 点对点通信
+hub.sendTo('Analyzer-1', 'Analyzer-2', { type: 'request', data: {} });
+
+// 广播消息
+hub.broadcast('Analyzer-1', { type: 'announcement' });
+
+// 发布-订阅
+hub.subscribe('Agent-1', 'market-updates', (message, sender) => {
+  console.log('收到市场更新:', message);
+});
+
+hub.publish('market-updates', { trend: 'bullish' });
+
+// 进度报告
+hub.reportProgress('Agent-1', 'task-001', 50);
 ```
 
-## 更新日志
+### 执行监控 (Execution Monitor)
+
+```javascript
+const monitor = scheduler.getExecutionMonitor();
+
+// 注册任务
+monitor.registerTask('task-001', {
+  name: '股票分析',
+  agentId: 'Analyzer-1',
+  branch: 'Standard'
+});
+
+// 启动任务
+monitor.startTask('task-001');
+
+// 更新进度
+monitor.updateProgress('task-001', 50, { checkpoint: '数据获取完成' });
+
+// 完成任务
+monitor.completeTask('task-001');
+
+// 获取监控仪表板
+const dashboard = scheduler.getDashboard();
+console.log(dashboard.summary);
+console.log(dashboard.agents);
+```
+
+### 多Agent任务执行
+
+```javascript
+// 自动检测并使用多Agent
+const result = await scheduler.execute({
+  task: "分析整个代码库，包括项目结构、依赖关系、代码质量",
+  chatId: "your_feishu_chat_id",
+  multiAgent: true  // 启用多Agent协作
+});
+```
+
+### 自动路由 (Auto Router) - 用户确认增强
+
+```javascript
+const { createAutoRouter } = require('./index');
+
+// 创建自动路由器
+const router = createAutoRouter({
+  enabled: true,
+  confirmThreshold: 'medium',  // simple/medium/complex
+  chatId: 'your_feishu_chat_id'
+});
+
+// 处理任务（自动判断复杂度）
+const result = await router.handle('分析整个代码库并生成报告');
+
+if (result.useScheduler) {
+  console.log('任务已通过调度器执行');
+  console.log('复杂度:', result.analysis.level);
+  console.log('建议分支:', result.analysis.suggestedBranch);
+} else {
+  console.log('简单任务，直接处理');
+}
+```
+
+**复杂度判定规则:**
+- **简单任务** (<100字符, 关键词: 查询/查看/简单) → 直接处理
+- **中等任务** (100-200字符, 多工具调用) → 调度器 + 用户确认
+- **复杂任务** (>200字符, 关键词: 分析/重构/批量/所有) → 调度器 + 用户确认 (Deep分支)
+
+**判定因素:**
+- 任务长度
+- 关键词匹配
+- 预估工具调用数
+- 步骤复杂度
+
+---
+
+### 指令队列 (Command Queue) - 飞书消息排队执行
+
+```javascript
+const { createFeishuCommandQueue } = require('./index');
+
+// 创建飞书指令队列
+const queue = createFeishuCommandQueue({
+  maxQueueSize: 50,
+  queueOptions: {
+    enableNotification: true
+  }
+});
+
+// 处理用户消息（自动排队）
+async function handleUserMessage(message, chatId) {
+  const taskId = await queue.enqueue(message, chatId);
+  console.log('任务已加入队列:', taskId);
+}
+
+// 队列状态查询
+const status = queue.getStatus();
+console.log(`队列长度: ${status.queueLength}`);
+
+// 队列详情
+const details = queue.getQueueDetails();
+details.pending.forEach((task, i) => {
+  console.log(`${i+1}. ${task.data}`);
+});
+```
+
+**队列功能:**
+- ✅ 任务自动排队
+- ✅ 优先级支持（高优先级插队）
+- ✅ 飞书通知（入队/开始/完成/失败）
+- ✅ 队列状态查询
+- ✅ 任务取消
+- ✅ 失败重试
+- ✅ 超时处理
+
+**使用场景:**
+1. 正在执行指令1时收到指令2
+2. 指令2自动入队等待
+3. 指令1完成后自动执行指令2
+4. 用户收到队列位置通知
+
+---
+
+### v1.4.0 (2026-02-26) - Phase 5
+- 新增协作中心 (Collaboration Hub) - Agent间通信、状态共享
+- 新增执行监控 (Execution Monitor) - 实时监控、故障恢复
+- 新增自动路由 (Auto Router) - 任务复杂度自动检测、用户确认
+- 新增多Agent协作执行
+- 新增指令队列 (Command Queue) - 飞书消息排队执行
 
 ### v1.1.0 (2026-02-24) - Phase 2
 - 新增LLM智能分类层

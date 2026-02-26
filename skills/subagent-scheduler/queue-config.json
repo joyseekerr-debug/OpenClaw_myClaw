@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "autoStart": true,
+  "maxQueueSize": 50,
+  "defaultTimeout": 300000,
+  "enableNotification": true,
+  "chatId": "ou_93bf97d26531d833b062d99f3963c3d9",
+  "priorityKeywords": {
+    "high": ["紧急", "优先", "重要", "立刻", "马上"],
+    "low": ["稍后", "不忙时", "有空时"]
+  }
+}
