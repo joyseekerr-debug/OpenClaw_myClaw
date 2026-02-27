@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-02-27T01:22:26.076404",
+  "data_source": "REAL - Xiaomi 1810.HK 2023H1",
+  "records": 123,
+  "total_trades": 1,
+  "win_rate": 1.0,
+  "profit_factor": Infinity,
+  "total_return": 0.0013639639639639062,
+  "max_drawdown": -0.00020010010010009863,
+  "sharpe_ratio": 10.856234803664139,
+  "direction_accuracy": 0.4
+}

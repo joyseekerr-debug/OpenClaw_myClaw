@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-02-27T01:29:56.341858",
+  "data_source": "REAL - Xiaomi 1810.HK 2023H1",
+  "optimization_applied": true,
+  "optimal_threshold": 0.5,
+  "optimal_lookback": 20,
+  "total_predictions": 26,
+  "direction_accuracy": 0.6923076923076923,
+  "backtest": {
+    "total_trades": 4,
+    "win_rate": 0.5,
+    "profit_factor": 3.81320156386026,
+    "total_return": 0.00688340220301674,
+    "max_drawdown": -0.0037455983127066736,
+    "sharpe_ratio": 4.261251574117156
+  }
+}

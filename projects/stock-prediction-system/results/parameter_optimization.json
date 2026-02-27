@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-02-27T01:28:49.357836",
+  "optimization": "confidence_threshold",
+  "results": [
+    {
+      "threshold": 0.5,
+      "predictions": 31,
+      "accuracy": 0.6129032258064516
+    },
+    {
+      "threshold": 0.55,
+      "predictions": 31,
+      "accuracy": 0.6129032258064516
+    },
+    {
+      "threshold": 0.6,
+      "predictions": 31,
+      "accuracy": 0.6129032258064516
+    },
+    {
+      "threshold": 0.65,
+      "predictions": 24,
+      "accuracy": 0.5833333333333334
+    },
+    {
+      "threshold": 0.7,
+      "predictions": 24,
+      "accuracy": 0.5833333333333334
+    }
+  ],
+  "best_threshold": 0.5,
+  "best_accuracy": 0.6129032258064516
+}

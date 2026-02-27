@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-02-27T01:13:50.872422",
+  "model": "PriceAction",
+  "total_trades": 11,
+  "win_rate": 0.18181818181818182,
+  "profit_factor": 0.24091848900300744,
+  "total_return": -0.015805993799574643,
+  "max_drawdown": -0.01610956003327985,
+  "sharpe_ratio": -4.7128534428955335
+}

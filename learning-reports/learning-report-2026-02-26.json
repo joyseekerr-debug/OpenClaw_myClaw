@@ -1,0 +1,187 @@
+{
+  "date": "2026-02-26",
+  "summary": {
+    "totalTasks": 96,
+    "avgSuccessRate": "81.3",
+    "recommendationCount": 7,
+    "autoAdjustments": 0
+  },
+  "classification": {
+    "Batch": {
+      "count": 1,
+      "successRate": 100,
+      "avgDuration": 50000,
+      "costAccuracy": 0.0020000000000000018
+    },
+    "Deep": {
+      "count": 15,
+      "successRate": 100,
+      "avgDuration": 300000,
+      "costAccuracy": 299999.95
+    },
+    "Simple": {
+      "count": 32,
+      "successRate": 96.9,
+      "avgDuration": 6094,
+      "costAccuracy": 4687.49871875
+    },
+    "Standard": {
+      "count": 47,
+      "successRate": 66,
+      "avgDuration": 74149,
+      "costAccuracy": 43085.0984893617
+    },
+    "Unknown": {
+      "count": 1,
+      "successRate": 0,
+      "avgDuration": 1,
+      "costAccuracy": 0
+    }
+  },
+  "duration": {
+    "Deep": {
+      "count": 15,
+      "median": 300000,
+      "p90": 300000,
+      "p95": 300000,
+      "avgActual": 300000,
+      "avgEstimated": 300000,
+      "bias": 0,
+      "biasPercent": 0
+    },
+    "Simple": {
+      "count": 31,
+      "median": 4000,
+      "p90": 4000,
+      "p95": 4000,
+      "avgActual": 4355,
+      "avgEstimated": 5000,
+      "bias": -645,
+      "biasPercent": -13
+    },
+    "Standard": {
+      "count": 31,
+      "median": 70000,
+      "p90": 120000,
+      "p95": 120000,
+      "avgActual": 82097,
+      "avgEstimated": 45000,
+      "bias": 37097,
+      "biasPercent": 82
+    }
+  },
+  "cost": {
+    "Simple": {
+      "count": 31,
+      "avgErrorPercent": "96.9",
+      "mape": "96.9"
+    },
+    "Standard": {
+      "count": 31,
+      "avgErrorPercent": "96.9",
+      "mape": "96.9"
+    },
+    "Deep": {
+      "count": 15,
+      "avgErrorPercent": "100.0",
+      "mape": "100.0"
+    }
+  },
+  "branchSuccess": {
+    "Batch": {
+      "total": 1,
+      "success": 1,
+      "failed": 0,
+      "successRate": 100,
+      "avgRetries": "0.00"
+    },
+    "Deep": {
+      "total": 15,
+      "success": 15,
+      "failed": 0,
+      "successRate": 100,
+      "avgRetries": "0.00"
+    },
+    "Simple": {
+      "total": 32,
+      "success": 31,
+      "failed": 1,
+      "successRate": 96.9,
+      "avgRetries": "0.00"
+    },
+    "Standard": {
+      "total": 47,
+      "success": 31,
+      "failed": 16,
+      "successRate": 66,
+      "avgRetries": "0.00"
+    },
+    "Unknown": {
+      "total": 1,
+      "success": 0,
+      "failed": 1,
+      "successRate": 0,
+      "avgRetries": "0.00"
+    }
+  },
+  "recommendations": [
+    {
+      "type": "classification",
+      "priority": "high",
+      "message": "Standard分支成功率仅66%，可能有任务被误判为Standard",
+      "suggestion": "降低Simple分支的置信度阈值，让更多任务使用更高层级策略",
+      "autoApplicable": false
+    },
+    {
+      "type": "timeout",
+      "branch": "Standard",
+      "priority": "high",
+      "message": "Standard分支实际耗时比预估高82%",
+      "suggestion": "建议将Standard的超时时间从45000ms调整为98516ms",
+      "currentValue": 45000,
+      "suggestedValue": 98516,
+      "autoApplicable": true
+    },
+    {
+      "type": "success_rate",
+      "branch": "Standard",
+      "priority": "high",
+      "message": "Standard分支成功率仅66%",
+      "suggestion": "建议增加重试次数或降级到更稳定的策略",
+      "autoApplicable": true
+    },
+    {
+      "type": "success_rate",
+      "branch": "Unknown",
+      "priority": "high",
+      "message": "Unknown分支成功率仅0%",
+      "suggestion": "建议增加重试次数或降级到更稳定的策略",
+      "autoApplicable": true
+    },
+    {
+      "type": "cost",
+      "branch": "Simple",
+      "priority": "medium",
+      "message": "Simple分支成本预估误差96.9%过高",
+      "suggestion": "需要校准成本预估模型参数",
+      "autoApplicable": false
+    },
+    {
+      "type": "cost",
+      "branch": "Standard",
+      "priority": "medium",
+      "message": "Standard分支成本预估误差96.9%过高",
+      "suggestion": "需要校准成本预估模型参数",
+      "autoApplicable": false
+    },
+    {
+      "type": "cost",
+      "branch": "Deep",
+      "priority": "medium",
+      "message": "Deep分支成本预估误差100.0%过高",
+      "suggestion": "需要校准成本预估模型参数",
+      "autoApplicable": false
+    }
+  ],
+  "adjustments": []
+}
