@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-02-27T12:32:53.232592",
+  "phase": "Hour 1-2: Data Expansion",
+  "stocks": {
+    "1810.HK": {
+      "name": "\u5c0f\u7c73\u96c6\u56e2",
+      "records": 1304,
+      "price_min": 7.780010576854621,
+      "price_max": 26.132199250128966,
+      "avg_volume": 74637764.50306748
+    },
+    "0700.HK": {
+      "name": "\u817e\u8baf\u63a7\u80a1",
+      "records": 1304,
+      "price_min": 375.7972658884873,
+      "price_max": 1777.3933992575862,
+      "avg_volume": 75501630.0851227
+    },
+    "9988.HK": {
+      "name": "\u963f\u91cc\u5df4\u5df4",
+      "records": 1304,
+      "price_min": 62.85609269426502,
+      "price_max": 114.69102126474537,
+      "avg_volume": 73753707.34355828
+    },
+    "3690.HK": {
+      "name": "\u7f8e\u56e2",
+      "records": 1304,
+      "price_min": 107.20539762887879,
+      "price_max": 302.63336017402594,
+      "avg_volume": 74536333.2661043
+    }
+  },
+  "total_days": 1304,
+  "period": "2020-01-02 to 2024-12-31"
+}

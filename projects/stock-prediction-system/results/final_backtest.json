@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-02-27T12:08:36",
+  "backtest_period": "2023-04-04 00:00:00 to 2023-06-30 00:00:00",
+  "metrics": {
+    "total_return": 0.4341,
+    "max_drawdown": 0.0,
+    "annual_return": 9.2727,
+    "sharpe_ratio": 16.82,
+    "win_rate": 1.0,
+    "total_trades": 2,
+    "winning_trades": 2,
+    "final_capital": 143407.01
+  },
+  "note": "High confidence threshold (0.6) resulted in fewer trades but 100% win rate"
+}

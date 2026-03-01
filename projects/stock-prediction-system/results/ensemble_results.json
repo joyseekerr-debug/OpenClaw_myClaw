@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-02-27T10:01:00",
+  "results": {
+    "price_action": {
+      "predictions": 29,
+      "accuracy": 0.6207
+    },
+    "xgboost": {
+      "predictions": 11,
+      "accuracy": 0.3636,
+      "note": "mock implementation (XGBoost not installed)"
+    },
+    "ensemble": {
+      "predictions": 7,
+      "accuracy": 0.5714
+    }
+  },
+  "weights": {
+    "price_action": 0.4,
+    "xgboost": 0.6
+  }
+}

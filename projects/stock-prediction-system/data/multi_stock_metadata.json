@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-02-27T12:32:53.230574",
+  "stocks": [
+    "1810.HK",
+    "0700.HK",
+    "9988.HK",
+    "3690.HK"
+  ],
+  "stock_names": {
+    "1810.HK": "\u5c0f\u7c73\u96c6\u56e2",
+    "0700.HK": "\u817e\u8baf\u63a7\u80a1",
+    "9988.HK": "\u963f\u91cc\u5df4\u5df4",
+    "3690.HK": "\u7f8e\u56e2"
+  },
+  "period": "2020-01-02 00:00:00 to 2024-12-31 00:00:00",
+  "total_records": 1304,
+  "data_source": "mixed (akshare/yfinance/simulated)"
+}

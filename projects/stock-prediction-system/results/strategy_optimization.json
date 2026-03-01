@@ -1,0 +1,167 @@
+{
+  "timestamp": "2026-02-27T12:10:18.980601",
+  "threshold_optimization": [
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.5,
+      "position_size": 1.0
+    },
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.55,
+      "position_size": 1.0
+    },
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.6,
+      "position_size": 1.0
+    },
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.65,
+      "position_size": 1.0
+    },
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.7,
+      "position_size": 1.0
+    }
+  ],
+  "position_optimization": [
+    {
+      "total_return": 0.20587906285419885,
+      "max_drawdown": 0.0,
+      "annual_return": 2.3523344375721345,
+      "sharpe_ratio": 16.658940657675537,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 120587.90628541989,
+      "threshold": 0.55,
+      "position_size": 0.5
+    },
+    {
+      "total_return": 0.2944345837754807,
+      "max_drawdown": 0.0,
+      "annual_return": 4.299195304845355,
+      "sharpe_ratio": 16.72771269847259,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 129443.45837754807,
+      "threshold": 0.55,
+      "position_size": 0.7
+    },
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.55,
+      "position_size": 1.0
+    },
+    {
+      "total_return": 0.6853491200537735,
+      "max_drawdown": 0.0,
+      "annual_return": 28.158512807119678,
+      "sharpe_ratio": 16.967581507601288,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 168534.91200537735,
+      "threshold": 0.55,
+      "position_size": 1.5
+    }
+  ],
+  "stoploss_optimization": [
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.55,
+      "position_size": 1.0
+    },
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.55,
+      "position_size": 1.0
+    },
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.55,
+      "position_size": 1.0
+    },
+    {
+      "total_return": 0.4340700987956929,
+      "max_drawdown": 0.0,
+      "annual_return": 9.272722018835863,
+      "sharpe_ratio": 16.82393804777158,
+      "calmar_ratio": 0,
+      "win_rate": 1.0,
+      "total_trades": 2,
+      "final_capital": 143407.0098795693,
+      "threshold": 0.55,
+      "position_size": 1.0
+    }
+  ],
+  "best_threshold": 0.5,
+  "best_position_size": 1.5
+}

@@ -62,7 +62,6 @@ class XGBoostPredictor:
             'min_child_weight': min_child_weight,
             'objective': 'binary:logistic',
             'eval_metric': ['auc', 'logloss'],
-            'use_label_encoder': False,
             'n_jobs': -1,
             'random_state': 42
         }
@@ -109,22 +108,32 @@ class XGBoostPredictor:
         self.feature_names = X_train.columns.tolist()
         
         # 准备验证集
-        eval_set = [(X_train, y_train)]
+        eval_set = []
         if X_val is not None and y_val is not None:
-            eval_set.append((X_val, y_val))
+            eval_set = [(X_val, y_val)]
         
         logger.info("Starting XGBoost training...")
         
-        # 训练
-        self.model.fit(
-            X_train, y_train,
-            eval_set=eval_set,
-            early_stopping_rounds=early_stopping_rounds,
-            verbose=False
-        )
+        # 训练 (简化版本，避免API兼容问题)
+        try:
+            if eval_set:
+                # 尝试使用新API
+                from xgboost.callback import EarlyStopping
+                self.model.fit(
+                    X_train, y_train,
+                    eval_set=eval_set,
+                    callbacks=[EarlyStopping(rounds=early_stopping_rounds)],
+                    verbose=False
+                )
+            else:
+                self.model.fit(X_train, y_train, verbose=False)
+        except Exception as e:
+            # 回退到基础训练
+            logger.warning(f"Advanced training failed: {e}, using basic fit")
+            self.model.fit(X_train, y_train, verbose=False)
         
-        # 获取最佳迭代次数
-        best_iteration = self.model.best_iteration
+        # 获取最佳迭代次数 (仅early stopping时有)
+        best_iteration = getattr(self.model, 'best_iteration', self.params.get('n_estimators', 100))
         
         # 获取特征重要性
         self.feature_importance = pd.DataFrame({

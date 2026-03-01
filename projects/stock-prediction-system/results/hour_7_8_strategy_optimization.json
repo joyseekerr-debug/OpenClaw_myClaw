@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-02-27T12:36:19.989382",
+  "phase": "Hour 7-8: Strategy Optimization",
+  "strategy": "Multi-Factor with Dynamic Position Sizing",
+  "metrics": {
+    "total_return": 0.05032267341360988,
+    "max_drawdown": -0.03788690638338388,
+    "sharpe_ratio": 0.4528189125999292,
+    "win_rate": 0.4722222222222222,
+    "total_trades": 36,
+    "final_capital": 105032.26734136099
+  },
+  "signals": {
+    "total": 1304,
+    "buy": 499,
+    "sell": 461,
+    "hold": 344
+  }
+}

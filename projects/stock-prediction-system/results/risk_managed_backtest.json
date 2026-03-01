@@ -1,0 +1,59 @@
+{
+  "timestamp": "2026-02-27T12:12:32.328000",
+  "risk_management": {
+    "max_position": 0.5,
+    "max_drawdown": 0.1,
+    "var_limit": 0.02
+  },
+  "performance": {
+    "total_return": 0.09824016788782625,
+    "max_drawdown": 0.0,
+    "annual_return": 0.8321765637778882,
+    "sharpe_ratio": 14.438348916246404,
+    "calmar_ratio": Infinity,
+    "volatility": 0.04128606178318887,
+    "win_rate": 1.0,
+    "total_trades": 2,
+    "final_capital": 109824.01678878262
+  },
+  "trades": [
+    {
+      "type": "buy",
+      "price": 17.78,
+      "confidence": 0.8923475742340088,
+      "position_size": 0.3,
+      "volatility": 0.02,
+      "date": "2023-03-24 00:00:00"
+    },
+    {
+      "type": "sell",
+      "price": 21.38,
+      "pnl": 0.2024746906636669,
+      "reason": "signal",
+      "date": "2023-04-11 00:00:00"
+    },
+    {
+      "type": "buy",
+      "price": 19.94,
+      "confidence": 0.8943988680839539,
+      "position_size": 0.2,
+      "volatility": 0.22942816765298915,
+      "date": "2023-05-04 00:00:00"
+    },
+    {
+      "type": "sell",
+      "price": 20.6,
+      "pnl": 0.033099297893681046,
+      "reason": "signal",
+      "date": "2023-05-11 00:00:00"
+    },
+    {
+      "type": "buy",
+      "price": 19.82,
+      "confidence": 0.8894086480140686,
+      "position_size": 0.2,
+      "volatility": 0.2001864400323728,
+      "date": "2023-05-29 00:00:00"
+    }
+  ]
+}

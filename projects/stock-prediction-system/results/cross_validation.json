@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-02-27T11:24:07",
+  "dataset": {
+    "total_samples": 323,
+    "train_period": "2022-03-29 to 2023-06-30",
+    "features": 50
+  },
+  "xgboost_cv": {
+    "mean_accuracy": 0.8848,
+    "mean_f1": 0.8521,
+    "folds": [
+      {"fold": 1, "accuracy": 0.5152, "f1": 0.3503},
+      {"fold": 2, "accuracy": 0.9394, "f1": 0.9405},
+      {"fold": 3, "accuracy": 1.0000, "f1": 1.0000},
+      {"fold": 4, "accuracy": 1.0000, "f1": 1.0000},
+      {"fold": 5, "accuracy": 0.9697, "f1": 0.9699}
+    ]
+  },
+  "price_action_cv": {
+    "mean_accuracy": 0.0,
+    "note": "insufficient data for rolling windows"
+  }
+}

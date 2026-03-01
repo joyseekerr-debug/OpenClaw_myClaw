@@ -1,0 +1,41 @@
+{
+  "project": "24-Hour Stock Prediction System Optimization",
+  "timestamp": "2026-02-27T12:15:33.278709",
+  "dataset": {
+    "symbol": "1810.HK (Xiaomi)",
+    "period": "2022-03 to 2023-06",
+    "total_records": 323,
+    "features": 50
+  },
+  "model": {
+    "type": "XGBoost",
+    "params": {
+      "max_depth": 3,
+      "learning_rate": 0.01,
+      "n_estimators": 200,
+      "subsample": 0.8,
+      "colsample_bytree": 0.7
+    },
+    "cross_validation_accuracy": 0.8848,
+    "cross_validation_f1": 0.8521
+  },
+  "backtest": {
+    "aggressive_strategy": {
+      "return": 0.4341,
+      "sharpe": 16.82,
+      "max_drawdown": 0.0,
+      "trades": 2
+    },
+    "risk_managed": {
+      "return": 0.09824016788782625,
+      "sharpe": 14.438348916246404,
+      "max_drawdown": 0.0,
+      "trades": 2
+    }
+  },
+  "performance": {
+    "feature_engineering_time": "0.025s",
+    "training_time": "0.045s",
+    "prediction_latency": "1.823ms"
+  }
+}

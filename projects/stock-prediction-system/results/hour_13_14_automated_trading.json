@@ -1,0 +1,95 @@
+{
+  "timestamp": "2026-02-27T12:40:06.602973",
+  "phase": "Hour 13-14: Automated Trading",
+  "engine_config": {
+    "initial_capital": 100000,
+    "commission": 0.001,
+    "slippage": 0.001
+  },
+  "strategy_config": {
+    "min_confidence": 0.6,
+    "base_position": 0.3,
+    "max_position": 0.8
+  },
+  "performance": {
+    "total_return": -0.013591718413972413,
+    "max_drawdown": -0.05075061365523744,
+    "final_equity": 98640.82815860276,
+    "total_trades": 14,
+    "final_cash": 98640.82815860276,
+    "open_positions": 0
+  },
+  "trades": [
+    {
+      "timestamp": "2026-02-27T12:40:06.599939",
+      "symbol": "1810.HK",
+      "side": "buy",
+      "price": 24.245577186481096,
+      "quantity": 1799.8918827998139
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.599939",
+      "symbol": "1810.HK",
+      "side": "sell",
+      "price": 24.628472947245648,
+      "quantity": 1799.8918827998139
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.600968",
+      "symbol": "1810.HK",
+      "side": "buy",
+      "price": 24.579961151118244,
+      "quantity": 1700.9789845299726
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.600968",
+      "symbol": "1810.HK",
+      "side": "sell",
+      "price": 23.81392794171151,
+      "quantity": 1700.9789845299726
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.600968",
+      "symbol": "1810.HK",
+      "side": "buy",
+      "price": 24.840592279681093,
+      "quantity": 1653.5972841201421
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.600968",
+      "symbol": "1810.HK",
+      "side": "sell",
+      "price": 24.253317483452143,
+      "quantity": 1653.5972841201421
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.600968",
+      "symbol": "1810.HK",
+      "side": "buy",
+      "price": 23.64302783798869,
+      "quantity": 1726.1335953687405
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.600968",
+      "symbol": "1810.HK",
+      "side": "sell",
+      "price": 25.013460900334376,
+      "quantity": 1726.1335953687405
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.601971",
+      "symbol": "1810.HK",
+      "side": "buy",
+      "price": 25.553558971193645,
+      "quantity": 1572.9940951262831
+    },
+    {
+      "timestamp": "2026-02-27T12:40:06.601971",
+      "symbol": "1810.HK",
+      "side": "sell",
+      "price": 24.316331405372193,
+      "quantity": 1572.9940951262831
+    }
+  ],
+  "orders_count": 14
+}
