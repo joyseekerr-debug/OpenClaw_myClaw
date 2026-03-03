@@ -2,11 +2,12 @@
 $workspace = "$env:USERPROFILE\.openclaw\workspace"
 Set-Location $workspace
 
-# Check if there are changes
+# Check for changes (including untracked files)
+$untracked = git ls-files --others --exclude-standard
 $diff = git diff --quiet 2>$null
-$staged = git diff --staged --quiet 2>$null
+$hasChanges = $diff -ne 0 -or $untracked
 
-if ($LASTEXITCODE -eq 0) {
+if (-not $hasChanges) {
     Write-Host "No changes to sync"
     exit 0
 }
