@@ -1,0 +1,37 @@
+Symbol,Name,Sector,Market_Cap_USD,PE_TTM,EV_EBITDA,Analyst_Coverage,Analyst_Rating,3M_Return_Est,ETF_Benchmark,ETF_3M_Return,Relative_Excess_Pct,Z_Score,Status,Priority,Investment_Thesis,Key_Catalyst,Position_Size_Rec,Risk_Level
+NBR,Nabors Industries Ltd,Land Drilling,1120000000,12.3,3.7,7,Hold,-2.0,IEZ,15.0,-17.0,-3.5,TARGET,1,中东订单增长85%未计价,Q4减值冲回,30%,Medium
+RES,RPC Inc,Pressure Pumping,1800000000,8.5,4.2,4,Hold,-3.0,IEZ,15.0,-18.0,-3.7,TARGET,2,P/E仅8.5x显著折价,分析师覆盖增加,30%,Medium
+TTI,TETRA Technologies Inc,Energy Services,320000000,12.3,3.8,1,Hold,-8.0,IEZ,15.0,-23.0,-4.7,TARGET,3,小市值流动性折价,基本面改善确认,20%,High
+OII,Oceaneering International,Subsea Services,1200000000,22.1,5.8,3,Hold,-6.0,IEZ,15.0,-21.0,-4.3,TARGET,4,海底服务边际复苏,Q4订单公告,25%,Medium
+HP,Helmerich & Payne Inc,Land Drilling,3800000000,12.3,4.5,8,Hold,-5.0,IEZ,15.0,-20.0,-4.1,TARGET,5,陆地钻井龙头,钻机数回升,25%,Low
+NOV,NOV Inc,Oilfield Equipment,8500000000,18.2,4.1,8,Hold,-4.0,IEZ,15.0,-19.0,-3.9,TARGET,6,设备技术龙头,国际订单增长,25%,Low
+PTEN,Patterson-UTI Energy,Land Drilling,4200000000,9.8,3.2,7,Hold,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,7,二叠纪盆地核心,合并协同效应,25%,Medium
+TDW,Tidewater Inc,Offshore Services,2100000000,25.3,6.2,5,Buy,-8.0,IEZ,15.0,-23.0,-4.7,TARGET,8,海上服务复苏,Q4财报已发布,25%,Medium
+WFRD,Weatherford International,Oilfield Services,8500000000,22.1,9.8,14,Buy,-5.0,IEZ,15.0,-20.0,-4.1,TARGET,9,综合油服龙头,国际化扩张,20%,Low
+VAL,Valaris Limited,Offshore Drilling,4800000000,25.3,8.2,8,Hold,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,10,海上钻井复苏,新订单获取,25%,Medium
+FTI,TechnipFMC plc,Subsea Equipment,12000000000,18.2,7.2,12,Hold,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,11,海底设备技术,新能源转型,20%,Low
+NE,Noble Corporation plc,Offshore Drilling,5500000000,28.5,9.5,9,Buy,-5.0,IEZ,15.0,-20.0,-4.1,TARGET,12,海上钻井龙头, fleet renewal,25%,Medium
+HLX,Helix Energy Solutions,Subsea Services,950000000,25.3,7.8,3,Hold,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,13,海底服务专业,边际订单改善,20%,High
+XPRO,Expro Group Holdings,Well Services,1200000000,22.1,6.5,3,Hold,-5.0,IEZ,15.0,-20.0,-4.1,TARGET,14,完井服务,技术差异化,20%,Medium
+LBRT,Liberty Energy Inc,Pressure Pumping,5200000000,8.5,3.8,7,Buy,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,15,压裂服务龙头,数字技术转型,25%,Low
+NOA,North American Construction Group,Construction Mining,550000000,9.8,3.5,3,Buy,-6.8,IEZ,15.0,-21.8,-4.4,TARGET,16,矿山建设服务,能源基建订单,20%,High
+WHD,Cactus Inc,Wellhead Equipment,2800000000,22.1,8.5,6,Buy,-3.0,IEZ,15.0,-18.0,-3.7,WATCH,17,井口设备龙头,市场份额扩张,15%,Medium
+AROC,Archrock Inc,Gas Compression,3200000000,12.5,6.8,6,Buy,-3.0,IEZ,15.0,-18.0,-3.7,WATCH,18,天然气压缩服务,LNG需求增长,15%,Low
+SLB,SLB N.V.,Oilfield Services,95000000000,16.8,9.5,32,Buy,-3.0,IEZ,15.0,-18.0,-3.7,WATCH,19,全球最大油服,数字化转型,10%,Low
+BKR,Baker Hughes Company,Oilfield Services,35000000000,16.5,8.5,25,Buy,3.0,IEZ,15.0,-12.0,-2.4,HOLD,20,IEZ最大权重,已充分定价,0%,Low
+HAL,Halliburton Company,Oilfield Services,28000000000,14.5,8.2,16,Buy,0.2,IEZ,15.0,-14.8,-3.0,HOLD,21,综合油服巨头,估值合理,0%,Low
+RIG,Transocean Ltd,Offshore Drilling,6500000000,-,-5.0,10,Hold,-5.0,IEZ,15.0,-20.0,-4.1,AVOID,22,持续亏损,财务恶化,0%,High
+SDRL,Seadrill Limited,Offshore Drilling,1800000000,-,-,4,Hold,-2.0,IEZ,15.0,-17.0,-3.5,AVOID,23,重组后经营困难,基本面弱化,0%,High
+ASC,Ardmore Shipping,Product/Chemical Tanker,480000000,4.8,3.2,3,Buy,28.0,BWET,140.0,-112.0,-3.3,TARGET,1,TCE跳涨48%未计价,ESG数据更新,30%,High
+TNK,Teekay Tankers,VLCC Operator,1200000000,6.5,4.2,4,Buy,35.0,BWET,140.0,-105.0,-3.1,TARGET,2,VLCC运价补涨,Q4财报验证,30%,Medium
+DHT,DHT Holdings,VLCC Operator,3100000000,9.2,6.8,6,Buy,42.0,BWET,140.0,-98.0,-2.9,TARGET,3,船队结构优化,新船交付,25%,Low
+NAT,Nordic American Tankers,VLCC Operator,850000000,15.8,8.5,3,Hold,41.0,BWET,140.0,-99.0,-2.9,TARGET,4,高股息策略,运价韧性,25%,Medium
+STNG,Scorpio Tankers,Product Tanker,3800000000,7.8,5.8,8,Buy,38.0,BWET,140.0,-102.0,-3.0,TARGET,5,成品油轮龙头,运价多元化,25%,Low
+FRO,Frontline plc,VLCC Operator,7800000000,8.5,6.2,12,Buy,45.0,BWET,140.0,-95.0,-2.8,EXPOSED,6,已充分定价,估值合理,0%,Low
+TEN,Tsakos Energy Navigation,Diversified Tanker,620000000,5.2,3.8,2,Hold,48.0,BWET,140.0,-92.0,-2.7,EXPOSED,7,船龄偏高,运价弹性,10%,Medium
+AG,First Majestic Silver Corp,Silver Miner,3200000000,28.5,16.5,6,Hold,-4.0,GDX,22.0,-26.0,-2.8,TARGET,1,白银/黄金比修复,金银比收敛,25%,Medium
+CDE,Coeur Mining Inc,Silver Miner,4500000000,22.8,12.8,5,Hold,-2.0,GDX,22.0,-24.0,-2.6,TARGET,2,工业银+避险需求,银价突破30,25%,Medium
+HL,Hecla Mining Company,Silver Miner,3800000000,18.5,9.5,6,Buy,6.0,GDX,22.0,-16.0,-1.7,CANDIDATE,3,美国最大白银生产商,产量增长,20%,Medium
+AEM,Agnico Eagle Mines,Major Gold Miner,42000000000,28.2,14.2,16,Buy,8.0,GDX,22.0,-14.0,-1.5,EXPOSED,4,已充分定价,避险需求饱和,0%,Low
+NEM,Newmont Corporation,Major Gold Miner,75000000000,24.5,12.8,20,Buy,6.0,GDX,22.0,-16.0,-1.7,EXPOSED,5,全球最大黄金矿商,估值合理,0%,Low
+GOLD,Barrick Gold Corporation,Major Gold Miner,68000000000,22.8,11.5,18,Buy,4.0,GDX,22.0,-18.0,-2.0,EXPOSED,6,避险溢价充分,缺乏催化剂,0%,Low

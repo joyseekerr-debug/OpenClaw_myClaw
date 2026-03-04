@@ -1,0 +1,19 @@
+Symbol,Name,Sector,Market_Cap_USD,Weight_Pct,Analyst_Coverage,Analyst_Rating,Price_Target,PE_TTM,EV_EBITDA,3M_Return_Est,FCF_Yield_Pct,Status
+AEM,Agnico Eagle Mines,Major Gold Miner,42000000000,9.83,16,Buy,95.00,28.20,14.20,30.0,3.8,EXPOSED
+NEM,Newmont Corporation,Major Gold Miner,75000000000,8.51,20,Buy,52.00,24.50,12.80,28.0,4.2,EXPOSED
+GOLD,Barrick Gold Corporation,Major Gold Miner,68000000000,6.27,18,Buy,22.50,22.80,11.50,26.0,4.5,EXPOSED
+AU,AngloGold Ashanti,Major Gold Miner,25000000000,5.49,12,Buy,32.00,18.50,9.80,32.0,5.2,CANDIDATE
+WPM,Wheaton Precious Metals,Streaming Royalty,28000000000,5.15,14,Buy,65.00,35.50,18.50,24.0,3.2,EXPOSED
+GFI,Gold Fields Ltd,Major Gold Miner,18000000000,4.86,10,Buy,18.50,16.80,8.50,35.0,5.8,CANDIDATE
+FNV,Franco-Nevada Corporation,Streaming Royalty,32000000000,4.79,12,Hold,155.00,38.20,22.10,25.0,2.8,EXPOSED
+K,Kinross Gold Corporation,Major Gold Miner,12000000000,4.32,14,Buy,12.50,22.50,11.50,28.0,4.8,EXPOSED
+PAAS,Pan American Silver Corp,Silver Miner,8500000000,3.94,10,Buy,28.00,25.50,12.80,22.0,4.5,CANDIDATE
+NST,Northern Star Resources,Australian Gold,15000000000,3.30,8,Buy,18.50,28.50,15.20,26.0,3.8,EXPOSED
+AGI,Alamos Gold Inc,Gold Miner,7500000000,2.89,8,Buy,28.50,22.80,11.50,32.0,4.2,CANDIDATE
+RGLD,Royal Gold Inc,Streaming Royalty,8500000000,2.47,8,Buy,165.00,32.50,19.80,22.0,3.5,EXPOSED
+AG,First Majestic Silver Corp,Silver Miner,3200000000,2.02,6,Hold,8.50,28.50,16.50,18.0,2.8,CANDIDATE
+EQX,Equinox Gold Corp,Gold Miner,6500000000,2.00,7,Buy,8.50,18.50,9.80,35.0,6.2,CANDIDATE
+EVN,Evolution Mining Limited,Australian Gold,8500000000,1.80,6,Buy,4.50,15.20,8.50,32.0,5.5,CANDIDATE
+CDE,Coeur Mining Inc,Silver Miner,4500000000,1.76,5,Hold,6.50,22.80,12.80,20.0,3.8,CANDIDATE
+HL,Hecla Mining Company,Silver Miner,3800000000,1.53,6,Buy,6.50,18.50,9.50,28.0,4.8,CANDIDATE
+NGD,New Gold Inc,Gold Miner,2800000000,1.44,5,Hold,2.50,12.50,6.80,35.0,7.2,CANDIDATE

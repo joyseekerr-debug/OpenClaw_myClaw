@@ -1,0 +1,10 @@
+Stock,Symbol,Sector,Market_Cap_USD,3M_Return_Pct,IEZ_3M_Return_Pct,Relative_Excess_Pct,Z_Score,PE_TTM,EV_EBITDA,Analyst_Coverage,Net_Debt_Ratio,OCF_Interest_Coverage,Institutional_Holdings_QoQ_Change
+Halliburton,HAL,Oilfield Services,28000000000,15.2,15,-0.3,-0.1,14.5,8.2,18,0.35,5.5,2.1
+Schlumberger,SLB,Oilfield Services,95000000000,12.8,15,-2.2,-0.6,16.8,9.5,22,0.38,6.2,1.8
+NOV Inc,NOV,Oilfield Services,8500000000,5.5,15,-9.5,-2.4,18.2,4.1,4,0.42,3.8,3.2
+Nabors Industries,NBR,Land Drilling,1120000000,3.2,15,-11.8,-3.0,12.3,3.7,3,0.42,4.2,5.3
+RPC Inc,RES,Pressure Pumping,1800000000,2.8,15,-12.2,-3.1,8.5,4.2,2,0.18,6.5,4.1
+Oceaneering Intl,OII,Subsea Services,1200000000,4.1,15,-10.9,-2.8,22.1,5.8,3,0.35,3.9,2.8
+Tidewater Inc,TDW,Offshore Services,2100000000,6.8,15,-8.2,-2.1,25.3,6.2,5,0.45,4.5,1.5
+NACG,NOA,Construction Mining,550000000,8.2,15,-6.8,-1.7,9.8,3.5,2,0.28,5.8,3.1
+IEZ ETF,IEZ,Energy Equipment ETF,-,15,-,0,0,22.48,16.18,-,-,-,-

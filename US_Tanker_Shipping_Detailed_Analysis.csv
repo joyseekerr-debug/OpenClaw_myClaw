@@ -1,0 +1,15 @@
+Symbol,Name,Sector,Market_Cap_USD,Fleet_Type,Fleet_Age,Analyst_Coverage,Analyst_Rating,Price_Target,PE_TTM,EV_EBITDA,3M_Return_Est,TCE_USD_Per_Day,Status
+FRO,Frontline plc,VLCC Operator,7800000000,VLCC,7.2,12,Buy,28.50,8.50,6.20,45.0,52000,EXPOSED
+STNG,Scorpio Tankers,Product Tanker,3800000000,MR/LR,8.5,8,Buy,82.00,7.80,5.80,38.0,48000,EXPOSED
+DHT,DHT Holdings,VLCC Operator,3100000000,VLCC,8.1,6,Buy,12.50,9.20,6.80,42.0,51000,EXPOSED
+TNK,Teekay Tankers,VLCC Operator,1200000000,VLCC,9.2,4,Buy,68.00,6.50,4.20,35.0,49000,CANDIDATE
+NAT,Nordic American Tankers,VLCC Operator,850000000,VLCC,12.5,3,Hold,4.20,15.80,8.50,41.0,45000,CANDIDATE
+TEN,Tsakos Energy Navigation,Diversified,620000000,VLCC/Suezmax,10.2,2,Hold,28.00,5.20,3.80,48.0,42000,CANDIDATE
+ASC,Ardmore Shipping,Product/Chemical,480000000,MR,7.8,3,Buy,18.50,4.80,3.20,28.0,55000,TARGET
+INSW,International Seaways,VLCC/Suezmax,2800000000,VLCC,8.5,5,Buy,52.00,6.20,4.50,52.0,50000,EXPOSED
+TK,TORM plc,Product Tanker,2200000000,LR2,6.8,4,Buy,38.00,5.50,3.80,48.0,53000,EXPOSED
+HAFNI,Hafnia Limited,Product Tanker,1800000000,MR,7.5,3,Buy,42.00,6.80,4.20,45.0,48000,EXPOSED
+DNORD,D/S Norden,Combined Carrier,1200000000,Bulk/Tanker,9.2,2,Hold,165.00,4.50,3.20,42.0,42000,CANDIDATE
+OET,Ocean Yield ASA,Shuttle Tanker,850000000,Shuttle,8.5,2,Hold,42.00,8.50,6.20,38.0,38000,CANDIDATE
+PXS,Pyxis Tankers,Product Tanker,120000000,MR,10.5,1,Hold,8.50,3.20,2.80,35.0,45000,TARGET
+NNA,Navios Maritime Acquisition,VLCC,180000000,VLCC,11.2,1,Hold,3.20,4.50,3.50,32.0,42000,TARGET

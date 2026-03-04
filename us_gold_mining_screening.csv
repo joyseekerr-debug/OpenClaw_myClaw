@@ -1,0 +1,9 @@
+Stock,Symbol,Sector,Market_Cap_USD,3M_Return_Pct,GDX_3M_Return_Pct,Relative_Excess_Pct,Z_Score,PE_TTM,EV_EBITDA,Analyst_Coverage,FCF_Yield_Pct,Military_Exposure_Pct,Institutional_Holdings_QoQ_Change
+Newmont,NEM,Major Gold Miner,75000000000,28,22,6,0.4,24.5,12.8,20,4.2,0,1.5
+Barrick Gold,GOLD,Major Gold Miner,68000000000,26,22,4,0.3,22.8,11.5,18,4.5,0,0.8
+Agnico Eagle,AEM,Major Gold Miner,42000000000,30,22,8,0.5,28.2,14.2,16,3.8,0,2.1
+Wheaton Precious,WPM,Streaming Royalty,28000000000,24,22,2,0.1,35.5,18.5,14,3.2,0,-0.5
+Franco-Nevada,FNV,Streaming Royalty,32000000000,25,22,3,0.2,38.2,22.1,12,2.8,0,0.3
+Royal Gold,RGLD,Streaming Royalty,8500000000,22,22,0,0.0,32.5,19.8,8,3.5,0,1.2
+Silver Wheaton,SLW,Silver Streaming,15000000000,18,22,-4,-0.2,28.5,16.5,6,4.2,0,-1.8
+GDX ETF,GDX,Gold Miners ETF,-,22,-,0,0,-,-,-,-,-,-

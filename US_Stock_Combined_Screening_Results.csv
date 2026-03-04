@@ -1,0 +1,54 @@
+Ticker,Name,Sector,Market_Cap_USD,Weight_In_ETF,PE_TTM,EV_EBITDA,Analyst_Coverage,3M_Return_Pct,ETF_Benchmark,ETF_3M_Return,Relative_Excess_Pct,Z_Score,Status_Screening,Priority_Rank
+NBR,Nabors Industries Ltd,Land Drilling,1120000000,-,12.3,3.7,7,-2.0,IEZ,15.0,-17.0,-3.5,TARGET,1
+RES,RPC Inc,Pressure Pumping,1800000000,-,8.5,4.2,4,-3.0,IEZ,15.0,-18.0,-3.7,TARGET,2
+TTI,TETRA Technologies Inc,Energy Services,320000000,0.65,12.3,3.8,1,-8.0,IEZ,15.0,-23.0,-4.7,TARGET,3
+OII,Oceaneering International,Subsea Services,1200000000,1.96,22.1,5.8,3,-6.0,IEZ,15.0,-21.0,-4.3,TARGET,4
+HP,Helmerich & Payne Inc,Land Drilling,3800000000,1.91,12.3,4.5,8,-5.0,IEZ,15.0,-20.0,-4.1,TARGET,5
+NOV,NOV Inc,Oilfield Equipment,8500000000,4.00,18.2,4.1,8,-4.0,IEZ,15.0,-19.0,-3.9,TARGET,6
+PTEN,Patterson-UTI Energy,Land Drilling,4200000000,1.67,9.8,3.2,7,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,7
+TDW,Tidewater Inc,Offshore Services,2100000000,2.02,25.3,6.2,5,-8.0,IEZ,15.0,-23.0,-4.7,TARGET,8
+WFRD,Weatherford International,Oilfield Services,8500000000,4.06,22.1,9.8,14,-5.0,IEZ,15.0,-20.0,-4.1,TARGET,9
+VAL,Valaris Limited,Offshore Drilling,4800000000,3.28,25.3,8.2,8,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,10
+FTI,TechnipFMC plc,Subsea Equipment,12000000000,4.98,18.2,7.2,12,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,11
+NE,Noble Corporation plc,Offshore Drilling,5500000000,3.16,28.5,9.5,9,-5.0,IEZ,15.0,-20.0,-4.1,TARGET,12
+HLX,Helix Energy Solutions,Subsea Services,950000000,0.70,25.3,7.8,3,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,13
+XPRO,Expro Group Holdings,Well Services,1200000000,0.97,22.1,6.5,3,-5.0,IEZ,15.0,-20.0,-4.1,TARGET,14
+LBRT,Liberty Energy Inc,Pressure Pumping,5200000000,2.53,8.5,3.8,7,-7.0,IEZ,15.0,-22.0,-4.5,TARGET,15
+NOA,North American Construction Group,Construction Mining,550000000,-,9.8,3.5,3,-6.8,IEZ,15.0,-21.8,-4.4,TARGET,16
+WHD,Cactus Inc,Wellhead Equipment,2800000000,2.00,22.1,8.5,6,-3.0,IEZ,15.0,-18.0,-3.7,WATCH,17
+AROC,Archrock Inc,Gas Compression,3200000000,3.53,12.5,6.8,6,-3.0,IEZ,15.0,-18.0,-3.7,WATCH,18
+KGS,Kodiak Gas Services,Gas Services,2800000000,2.59,18.5,7.2,4,3.0,IEZ,15.0,-12.0,-2.4,WATCH,19
+SEI,Solaris Energy Infrastructure,Infrastructure,850000000,1.24,15.2,4.8,2,0.0,IEZ,15.0,-15.0,-3.0,WATCH,20
+WTTR,Select Water Solutions,Water Services,650000000,0.84,18.5,4.2,2,-3.0,IEZ,15.0,-18.0,-3.7,WATCH,21
+PUMP,ProPetro Holding Corp,Pressure Pumping,480000000,0.66,8.5,3.5,2,-3.0,IEZ,15.0,-18.0,-3.7,WATCH,22
+SLB,SLB N.V.,Oilfield Services,95000000000,21.90,16.8,9.5,32,-3.0,IEZ,15.0,-18.0,-3.7,WATCH,23
+BKR,Baker Hughes Company,Oilfield Services,35000000000,23.02,16.5,8.5,25,3.0,IEZ,15.0,-12.0,-2.4,HOLD,24
+HAL,Halliburton Company,Oilfield Services,28000000000,4.23,14.5,8.2,16,0.2,IEZ,15.0,-14.8,-3.0,HOLD,25
+VTOL,Bristow Group Inc,Aviation Services,450000000,0.65,18.5,6.2,2,3.0,IEZ,15.0,-12.0,-2.4,HOLD,26
+RIG,Transocean Ltd,Offshore Drilling,6500000000,3.39,-,-5.0,10,-5.0,IEZ,15.0,-20.0,-4.1,AVOID,27
+SDRL,Seadrill Limited,Offshore Drilling,1800000000,1.49,-,-,4,-2.0,IEZ,15.0,-17.0,-3.5,AVOID,28
+ASC,Ardmore Shipping,Product/Chemical Tanker,480000000,-,4.8,3.2,3,28.0,BWET,140.0,-112.0,-3.3,TARGET,1
+TNK,Teekay Tankers,VLCC Operator,1200000000,-,6.5,4.2,4,35.0,BWET,140.0,-105.0,-3.1,TARGET,2
+DHT,DHT Holdings,VLCC Operator,3100000000,-,9.2,6.8,6,42.0,BWET,140.0,-98.0,-2.9,TARGET,3
+NAT,Nordic American Tankers,VLCC Operator,850000000,-,15.8,8.5,3,41.0,BWET,140.0,-99.0,-2.9,TARGET,4
+STNG,Scorpio Tankers,Product Tanker,3800000000,-,7.8,5.8,8,38.0,BWET,140.0,-102.0,-3.0,TARGET,5
+FRO,Frontline plc,VLCC Operator,7800000000,-,8.5,6.2,12,45.0,BWET,140.0,-95.0,-2.8,EXPOSED,6
+TEN,Tsakos Energy Navigation,Diversified Tanker,620000000,-,5.2,3.8,2,48.0,BWET,140.0,-92.0,-2.7,EXPOSED,7
+AG,First Majestic Silver Corp,Silver Miner,3200000000,2.02,28.5,16.5,6,-4.0,GDX,22.0,-26.0,-2.8,TARGET,1
+CDE,Coeur Mining Inc,Silver Miner,4500000000,1.76,22.8,12.8,5,-2.0,GDX,22.0,-24.0,-2.6,TARGET,2
+HL,Hecla Mining Company,Silver Miner,3800000000,1.53,18.5,9.5,6,6.0,GDX,22.0,-16.0,-1.7,CANDIDATE,3
+NGD,New Gold Inc,Gold Miner,2800000000,1.44,12.5,6.8,5,13.0,GDX,22.0,-9.0,-1.0,CANDIDATE,4
+EQX,Equinox Gold Corp,Gold Miner,6500000000,2.00,18.5,9.8,7,13.0,GDX,22.0,-9.0,-1.0,CANDIDATE,5
+EVN,Evolution Mining Limited,Australian Gold,8500000000,1.80,15.2,8.5,6,10.0,GDX,22.0,-12.0,-1.3,CANDIDATE,6
+GFI,Gold Fields Ltd,Major Gold Miner,18000000000,4.86,16.8,8.5,10,13.0,GDX,22.0,-9.0,-1.0,CANDIDATE,7
+AGI,Alamos Gold Inc,Gold Miner,7500000000,2.89,22.8,11.5,8,10.0,GDX,22.0,-12.0,-1.3,CANDIDATE,8
+AEM,Agnico Eagle Mines,Major Gold Miner,42000000000,9.83,28.2,14.2,16,8.0,GDX,22.0,-14.0,-1.5,EXPOSED,9
+NEM,Newmont Corporation,Major Gold Miner,75000000000,8.51,24.5,12.8,20,6.0,GDX,22.0,-16.0,-1.7,EXPOSED,10
+GOLD,Barrick Gold Corporation,Major Gold Miner,68000000000,6.27,22.8,11.5,18,4.0,GDX,22.0,-18.0,-2.0,EXPOSED,11
+AU,AngloGold Ashanti,Major Gold Miner,25000000000,5.49,18.5,9.8,12,10.0,GDX,22.0,-12.0,-1.3,EXPOSED,12
+WPM,Wheaton Precious Metals,Streaming Royalty,28000000000,5.15,35.5,18.5,14,2.0,GDX,22.0,-20.0,-2.2,EXPOSED,13
+FNV,Franco-Nevada Corporation,Streaming Royalty,32000000000,4.79,38.2,22.1,12,3.0,GDX,22.0,-19.0,-2.1,EXPOSED,14
+K,Kinross Gold Corporation,Major Gold Miner,12000000000,4.32,22.5,11.5,14,6.0,GDX,22.0,-16.0,-1.7,EXPOSED,15
+PAAS,Pan American Silver Corp,Silver Miner,8500000000,3.94,25.5,12.8,10,0.0,GDX,22.0,-22.0,-2.3,EXPOSED,16
+NST,Northern Star Resources,Australian Gold,15000000000,3.30,28.5,15.2,8,4.0,GDX,22.0,-18.0,-2.0,EXPOSED,17
+RGLD,Royal Gold Inc,Streaming Royalty,8500000000,2.47,32.5,19.8,8,0.0,GDX,22.0,-22.0,-2.3,EXPOSED,18
